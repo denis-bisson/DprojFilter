@@ -7,6 +7,10 @@ uses
   u_DprojFilterMain in 'u_DprojFilterMain.pas',
   u_dzDefaultMain in '..\libs\dzlib\src\u_dzDefaultMain.pas';
 
+{$R *_version.res}
+{$R *_icon.res}
+{$R *_manifest.res}
+
 begin
   try
     MainClass := TDprojFilterMain;

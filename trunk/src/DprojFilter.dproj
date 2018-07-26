@@ -40,7 +40,6 @@
                         <Parameters Name="UseLauncher">False</Parameters>
                         <Parameters Name="LoadAllSymbols">True</Parameters>
                         <Parameters Name="LoadUnspecifiedSymbols">False</Parameters>
-                        <Parameters Name="RunParams"/>
                     </Parameters>
                     <VersionInfo>
                         <VersionInfo Name="IncludeVerInfo">False</VersionInfo>
@@ -89,4 +88,8 @@
         <DCCReference Include="..\libs\dzlib\src\u_dzDefaultMain.pas"/>
         <DCCReference Include="u_DprojFilterMain.pas"/>
     </ItemGroup>
+    <PropertyGroup>
+        <PostBuildEvent>call ..\buildtools\postbuild.cmd $(OUTPUTDIR)$(OUTPUTNAME)</PostBuildEvent>
+        <PreBuildEvent>call ..\buildtools\prebuild.cmd $(PROJECTPATH)</PreBuildEvent>
+    </PropertyGroup>
 </Project>
