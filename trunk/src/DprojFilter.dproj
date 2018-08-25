@@ -9,25 +9,35 @@
         <ProjectGuid>{29985e20-7aa0-4356-91d8-bb4bc8b57893}</ProjectGuid>
     </PropertyGroup>
     <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+        <DCC_DcuOutput>..\dcu\win32\release</DCC_DcuOutput>
         <DCC_DebugInformation>False</DCC_DebugInformation>
-        <DCC_Define>RELEASE</DCC_Define>
+        <DCC_Define>RELEASE;no_translation;no_translation_hint</DCC_Define>
+        <DCC_ExeOutput>..</DCC_ExeOutput>
+        <DCC_HppOutput>..\dcu\win32\release</DCC_HppOutput>
+        <DCC_IncludePath>..\libs\dzlib\src;..\libs\dzlib\templates;..\libs\dzlib\forms;..\libs\dzlib\jedi_inc</DCC_IncludePath>
         <DCC_LocalDebugSymbols>False</DCC_LocalDebugSymbols>
+        <DCC_ObjOutput>..\dcu\win32\release</DCC_ObjOutput>
+        <DCC_ObjPath>..\libs\dzlib\src;..\libs\dzlib\templates;..\libs\dzlib\forms;..\libs\dzlib\jedi_inc</DCC_ObjPath>
+        <DCC_ResourcePath>..\libs\dzlib\src;..\libs\dzlib\templates;..\libs\dzlib\forms;..\libs\dzlib\jedi_inc</DCC_ResourcePath>
+        <DCC_SYMBOL_PLATFORM>False</DCC_SYMBOL_PLATFORM>
         <DCC_SymbolReferenceInfo>0</DCC_SymbolReferenceInfo>
+        <DCC_UNIT_PLATFORM>False</DCC_UNIT_PLATFORM>
+        <DCC_UnitSearchPath>..\libs\dzlib\src;..\libs\dzlib\templates;..\libs\dzlib\forms;..\libs\dzlib\jedi_inc</DCC_UnitSearchPath>
         <Version>7.0</Version>
     </PropertyGroup>
     <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-        <DCC_DcuOutput>..\dcu</DCC_DcuOutput>
-        <DCC_Define>DEBUG;no_translation</DCC_Define>
+        <DCC_DcuOutput>..\dcu\win32\debug</DCC_DcuOutput>
+        <DCC_Define>DEBUG;no_translation;no_translation_hint</DCC_Define>
         <DCC_ExeOutput>..</DCC_ExeOutput>
-        <DCC_HppOutput>..\dcu</DCC_HppOutput>
-        <DCC_IncludePath>$(BDS)\lib\Debug;D:\Source\VCLDelphiInstall\libs\JCL\lib\d11\debug;..\libs\dzlib\src;..\libs\dzlib\templates;..\libs\dzlib\forms;..\libs\dzlib\jedi_inc</DCC_IncludePath>
-        <DCC_ObjOutput>..\dcu</DCC_ObjOutput>
-        <DCC_ObjPath>$(BDS)\lib\Debug;D:\Source\VCLDelphiInstall\libs\JCL\lib\d11\debug;..\libs\dzlib\src;..\libs\dzlib\templates;..\libs\dzlib\forms;..\libs\dzlib\jedi_inc</DCC_ObjPath>
+        <DCC_HppOutput>..\dcu\win32\debug</DCC_HppOutput>
+        <DCC_IncludePath>$(BDS)\lib\Debug;..\libs\dzlib\src;..\libs\dzlib\templates;..\libs\dzlib\forms;..\libs\dzlib\jedi_inc</DCC_IncludePath>
+        <DCC_ObjOutput>..\dcu\win32\debug</DCC_ObjOutput>
+        <DCC_ObjPath>$(BDS)\lib\Debug;..\libs\dzlib\src;..\libs\dzlib\templates;..\libs\dzlib\forms;..\libs\dzlib\jedi_inc</DCC_ObjPath>
         <DCC_Optimize>False</DCC_Optimize>
-        <DCC_ResourcePath>$(BDS)\lib\Debug;D:\Source\VCLDelphiInstall\libs\JCL\lib\d11\debug;..\libs\dzlib\src;..\libs\dzlib\templates;..\libs\dzlib\forms;..\libs\dzlib\jedi_inc</DCC_ResourcePath>
+        <DCC_ResourcePath>$(BDS)\lib\Debug;..\libs\dzlib\src;..\libs\dzlib\templates;..\libs\dzlib\forms;..\libs\dzlib\jedi_inc</DCC_ResourcePath>
         <DCC_SYMBOL_PLATFORM>False</DCC_SYMBOL_PLATFORM>
         <DCC_UNIT_PLATFORM>False</DCC_UNIT_PLATFORM>
-        <DCC_UnitSearchPath>$(BDS)\lib\Debug;D:\Source\VCLDelphiInstall\libs\JCL\lib\d11\debug;..\libs\dzlib\src;..\libs\dzlib\templates;..\libs\dzlib\forms;..\libs\dzlib\jedi_inc</DCC_UnitSearchPath>
+        <DCC_UnitSearchPath>$(BDS)\lib\Debug;..\libs\dzlib\src;..\libs\dzlib\templates;..\libs\dzlib\forms;..\libs\dzlib\jedi_inc</DCC_UnitSearchPath>
         <Version>7.0</Version>
     </PropertyGroup>
     <ProjectExtensions>
@@ -81,6 +91,10 @@
         </BorlandProject>
     </ProjectExtensions>
     <Import Project="$(MSBuildBinPath)\Borland.Delphi.Targets"/>
+    <PropertyGroup>
+        <PostBuildEvent>call ..\buildtools\postbuild.cmd $(OUTPUTDIR)$(OUTPUTNAME)</PostBuildEvent>
+        <PreBuildEvent>call ..\buildtools\prebuild.cmd $(PROJECTPATH)</PreBuildEvent>
+    </PropertyGroup>
     <ItemGroup>
         <DelphiCompile Include="DprojFilter.dpr">
             <MainSource>MainSource</MainSource>
@@ -88,8 +102,4 @@
         <DCCReference Include="..\libs\dzlib\src\u_dzDefaultMain.pas"/>
         <DCCReference Include="u_DprojFilterMain.pas"/>
     </ItemGroup>
-    <PropertyGroup>
-        <PostBuildEvent>call ..\buildtools\postbuild.cmd $(OUTPUTDIR)$(OUTPUTNAME)</PostBuildEvent>
-        <PreBuildEvent>call ..\buildtools\prebuild.cmd $(PROJECTPATH)</PreBuildEvent>
-    </PropertyGroup>
 </Project>
