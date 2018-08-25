@@ -1,5 +1,7 @@
 unit u_DprojFilterMain;
 
+{$I 'jedi.inc'}
+
 interface
 
 uses
@@ -53,6 +55,9 @@ begin
     Changed := TStringList.Create;
     try
       Orig.LoadFromFile(_fn);
+{$IFDEF SUPPORTS_UNICODE}
+      Changed.DefaultEncoding := Orig.Encoding;
+{$ENDIF}
       ChangeCnt := 0;
       InsertAfterDone := False;
       for i := 0 to Orig.Count - 1 do begin
@@ -222,3 +227,4 @@ begin
 end;
 
 end.
+
