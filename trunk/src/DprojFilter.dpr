@@ -5,7 +5,8 @@ program DprojFilter;
 uses
   SysUtils,
   u_DprojFilterMain in 'u_DprojFilterMain.pas',
-  u_dzDefaultMain in '..\libs\dzlib\src\u_dzDefaultMain.pas';
+  u_dzDefaultMain in '..\libs\dzlib\src\u_dzDefaultMain.pas',
+  RegExpr in 'RegExpr.pas';
 
 {$R *_version.res}
 {$R *_icon.res}

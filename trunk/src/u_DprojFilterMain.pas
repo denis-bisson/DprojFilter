@@ -5,6 +5,7 @@ unit u_DprojFilterMain;
 interface
 
 uses
+  RegExpr,
   SysUtils,
   Classes,
   u_dzDefaultMain;
@@ -15,6 +16,8 @@ type
     FDeleteLine: string;
     FChangeFrom: string;
     FChangeTo: string;
+    FRegExReplaceFrom: string;
+    FRegExReplaceTo: string;
     FInsertAfter: string;
     FInsert: string;
     FInsertAfterAll: Boolean;
@@ -47,13 +50,16 @@ var
   p: Integer;
   InsertAfterDone: Boolean;
   doInsert: Boolean;
+  RegExpr: TRegExpr;
 begin
   WriteLn('processing file ', _fn);
-  InitializeNil(Orig, Changed);
+  InitializeNil(Orig, Changed, RegExpr);
   try
     Orig := TStringList.Create;
     Changed := TStringList.Create;
+    RegExpr := TRegExpr.Create;
     try
+      RegExpr.Expression := FRegExReplaceFrom;
       Orig.LoadFromFile(_fn);
 {$IFDEF SUPPORTS_UNICODE}
       Changed.DefaultEncoding := Orig.Encoding;
@@ -97,6 +103,11 @@ begin
               InsertAfterDone := True;
           end;
         end else begin
+          if FRegExReplaceFrom <> '' then
+            if RegExpr.Exec(Line) then begin
+              Line := RegExpr.Replace(Line, FRegExReplaceTo, True);
+              Inc(ChangeCnt);
+            end;
           Changed.Add(Line);
         end;
       end;
@@ -117,7 +128,7 @@ begin
       end;
     end;
   finally
-    FreeAndNil(Orig, Changed);
+    FreeAndNil(Orig, Changed, RegExpr);
   end;
 end;
 
@@ -176,6 +187,16 @@ begin
         raise Exception.Create('--ChangeTo is not allowed without a --ChangeFrom option');
     end;
 
+    if FGetOpt.OptionPassed('RegExReplaceFrom', FRegExReplaceFrom) then begin
+      if FGetOpt.OptionPassed('RegExReplaceTo', FRegExReplaceTo) then begin
+        OptionsOK := True;
+      end else
+        raise Exception.Create('--RegExReplaceFrom also requires --RegExReplaceTo option');
+    end else begin
+      if FGetOpt.OptionPassed('RegExReplaceTo', FRegExReplaceTo) then
+        raise Exception.Create('--RegExReplaceTo is not allowed without a --RegExReplaceFrom option');
+    end;
+
     FINsertAfterAllowDuplicates := False;
     FInsertAfterAll := False;
     if FGetOpt.OptionPassed('InsertAfter', FInsertAfter) then begin
@@ -195,11 +216,13 @@ begin
     end;
 
     if not OptionsOK then
-      raise Exception.Create('You must pass one of the options: --DeleteLine, --ChangeFrom or --InsertAfter');
+      raise Exception.Create('You must pass one of the options: --DeleteLine, --ChangeFrom, --RegExReplaceFrom or --InsertAfter');
 
     FDeleteLine := SimpleDequoteString(FDeleteLine);
     FChangeFrom := SimpleDequoteString(FChangeFrom);
     FChangeTo := SimpleDequoteString(FChangeTo);
+    FRegExReplaceFrom := SimpleDequoteString(FRegExReplaceFrom);
+    FRegExReplaceTo := SimpleDequoteString(FRegExReplaceTo);
     FInsertAfter := SimpleDequoteString(FInsertAfter);
     FInsert := SimpleDequoteString(FInsert);
 
@@ -219,6 +242,8 @@ begin
   FGetOpt.RegisterOption('DeleteLine', 'Delete a line matching the parameter. E.g. --DeleteLine="<DCC_DcpOutput>..\..\lib\16</DCC_DcpOutput>"', True);
   FGetOpt.RegisterOption('ChangeFrom', 'Change a line matching the parameter to the parameter of --ChangeTo. E.g. --ChangeFrom="bla" --ChangeTo="blub"', True);
   FGetOpt.RegisterOption('ChangeTo', 'Gives the new content for the ChangeFrom parameter. E.g. --ChangeFrom="bla" --ChangeTo="blub"', True);
+  FGetOpt.RegisterOption('RegExReplaceFrom', 'Assuming a given regular expression, replace it if found inside a line with the parameter of --RegExReplaceTo.', True);
+  FGetOpt.RegisterOption('RegExReplaceTo', 'Gives the new content for the RegExReplaceFrom parameter. E.g. --RegExReplaceFrom="Ver[0-9]" --RegExReplaceTo="Ver2"', True);
   FGetOpt.RegisterOption('InsertAfter', 'Insert a new line after the one matching the parameter. Requires an --Insert option.', True);
   FGetOpt.RegisterOption('Insert', 'Gives the line to insert for the --InsertAfter option.', True);
   FGetOpt.RegisterOption('InsertAfterAll', 'If given, InsertAfter applies to all matching lines, if not, only to the first. Requires an --Insert option.', False);
@@ -227,4 +252,3 @@ begin
 end;
 
 end.
-
