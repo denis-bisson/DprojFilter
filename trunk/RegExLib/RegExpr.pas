@@ -1,3 +1,23 @@
+//********************************************************************************
+//* DprojFilter                                                                  *
+//* -----------------------------------------------------------------------------*
+//* TRegExpr class library, Delphi Regular Expressions                           *
+//* Copyright (c) 1999-2004 Andrey V. Sorokin, St.Petersburg, Russia
+//* Delphi 2009 Adaption by Sebastian Zierer
+//* Minor fixes and error message changes by Erik Berry
+//* -----------------------------------------------------------------------------*
+//* Used in the project DprojFilter                                              *
+//* Originally and mainly written by Thomas Mueller                              *
+//*   https://osdn.net/projects/dprojfilter                                      *
+//* This little adaptation written by Denis Bisson, Drummondville, Québec, Canada*
+//*   https://github.com/denis-bisson/DprojFilter                                *
+//*   2021-08-27                                                                 *
+//* -----------------------------------------------------------------------------*
+//* See following notes for complement information.                              *
+//* You should not remove these comments.                                        *
+//********************************************************************************
+//
+
 unit RegExpr;
 
 {

@@ -1,5 +1,19 @@
-{$IFNDEF JEDI_INC}
-{$DEFINE JEDI_INC}
+//********************************************************************************
+//* DprojFilter                                                                  *
+//* -----------------------------------------------------------------------------*
+//* Useful define from JEDI                                                      *
+//* -----------------------------------------------------------------------------*
+//* Used in the project DprojFilter                                              *
+//* Originally and mainly written by Thomas Mueller                              *
+//*   https://osdn.net/projects/dprojfilter                                      *
+//* This little adaptation written by Denis Bisson, Drummondville, Québec, Canada*
+//*   https://github.com/denis-bisson/DprojFilter                                *
+//*   2021-08-27                                                                 *
+//* -----------------------------------------------------------------------------*
+//* See following notes for complement information.                              *
+//* You should not remove these comments.                                        *
+//********************************************************************************
+//
 
 {**************************************************************************************************}
 {                                                                                                  }
@@ -602,6 +616,9 @@
   STACKFRAMES_ON         Compiling in the W+ state (generation of stack frames)
   EXTENDEDSYNTAX_ON      Compiling in the X+ state (Delphi extended syntax enabled)
 *)
+
+{$IFNDEF JEDI_INC}
+{$DEFINE JEDI_INC}
 
 {$DEFINE BORLAND}
 

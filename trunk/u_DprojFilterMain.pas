@@ -1,3 +1,19 @@
+//********************************************************************************
+//* DprojFilter                                                                  *
+//* -----------------------------------------------------------------------------*
+//* The main application unit file.                                              *
+//* -----------------------------------------------------------------------------*
+//* Originally and mainly written by Thomas Mueller                              *
+//*   https://osdn.net/projects/dprojfilter                                      *
+//* This little adaptation written by Denis Bisson, Drummondville, Québec, Canada*
+//*   https://github.com/denis-bisson/DprojFilter                                *
+//*   2021-08-27                                                                 *
+//* -----------------------------------------------------------------------------*
+//* See following notes for complement information.                              *
+//* You should not remove these comments.                                        *
+//********************************************************************************
+//
+
 unit u_DprojFilterMain;
 
 {$I 'jedi.inc'}
