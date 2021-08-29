@@ -39,16 +39,17 @@ type
     FInsert: string;
     FInsertAfterAll: Boolean;
     FINsertAfterAllowDuplicates: Boolean;
+    FFileIdx,FFileCount:integer;
     FCurrentFilename: string;
     FCurrentFileChangeCount: integer;
     FKeepGoing: integer;
     FOriginalFile: TStringList;
     FModifiedFile: TStringList;
-    procedure HandleParam(const slOptionsList: TStringList; const _Parameter: string);
-    procedure HandleFile(const slOptionsList: TStringList);
+    procedure HandleParam(const slOptionsList: TStringList; const _Parameter: string;const sOriginOfLines:string);
+    procedure HandleFile(const slOptionsList: TStringList;const sOriginOfLines:string);
     function HandleParamFile: integer;
-    function HandleOptionList(const slOptionsList: TStringList): integer;
-    function ParseOptionLine(const sOptionLine: string): integer;
+    function HandleOptionList(const slOptionsList: TStringList;const sOriginOfLines:string;const iDeepLevel:integer): integer;
+    function ParseOptionLine(const sOptionLine: string; const sOriginOfLine:string;const iDeepLevel:integer): integer;
     procedure FlushOptionCommands;
     function isOptionCommandsToDo: boolean;
     procedure RaiseExceptionSinceNoOptions;
@@ -65,6 +66,10 @@ uses
   u_dzStringUtils,
   u_dzMiscUtils,
   u_DprojFilterOptionKeyWords;
+
+  const
+sCOMMANDLINENAME=  'Command-line';
+sBARELYIMPOSSIBLEVALUE = '{D686FB37-E10E-48AB-8C85-0A6DE4E0247D}-{74CACA31-286D-422E-98D8-39472229F6ED}';
 
 { TDprojFilterMain }
 
@@ -109,7 +114,8 @@ begin
     slOptionList := TStringList.Create;
     try
       slOptionList.Add(sOptionLine);
-      for ParamIdx := 0 to pred(Parameters.Count) do HandleParam(slOptionList, Parameters[ParamIdx]);
+      for ParamIdx := 0 to pred(Parameters.Count) do
+        HandleParam(slOptionList, Parameters[ParamIdx], sCOMMANDLINENAME+' ('+sOptionLine+')');
     finally
       FreeAndNil(slOptionList);
     end;
@@ -120,19 +126,21 @@ begin
 end;
 
 { TDprojFilterMain.HandleParam }
-procedure TDprojFilterMain.HandleParam(const slOptionsList: TStringList; const _Parameter: string);
+procedure TDprojFilterMain.HandleParam(const slOptionsList: TStringList; const _Parameter: string;const sOriginOfLines:string);
 var
-  FileIdx: Integer;
   Files: TStringList;
 begin
   Files := TStringList.Create;
   try
     TSimpleDirEnumerator.EnumFilesOnly(_Parameter, Files, True);
     WriteUserMessage(Format('Found %d file%s matching %s', [Files.Count, IfThen(Files.Count > 1, 's', ''), _Parameter]));
-    for FileIdx := 0 to pred(Files.Count) do
+    FFileIdx:=0;
+    FFileCount:=Files.Count;
+    while FFileIdx<FFileCount  do
     begin
-      FCurrentFilename := Files[FileIdx];
-      HandleFile(slOptionsList);
+      FCurrentFilename := Files[FFileIdx];
+      HandleFile(slOptionsList,sOriginOfLines);
+      inc(FFileIdx);
     end;
   finally
     FreeAndNil(Files);
@@ -140,49 +148,59 @@ begin
 end;
 
 { TDprojFilterMain.HandleFile }
-procedure TDprojFilterMain.HandleFile(const slOptionsList: TStringList);
+procedure TDprojFilterMain.HandleFile(const slOptionsList: TStringList;const sOriginOfLines:string);
 var
   bakfn: string;
+  slOriginalFileLines:TStringList;
+  iAttemptIndex:integer;
 begin
-  WriteUserMessage(Format('Processing file "%s"...', [FCurrentFilename]));
+  WriteUserMessage('');
+  WriteUserMessage(Format('   Processing: "%s"', [FCurrentFilename]));
+  WriteUserMessage(Format('         File: %d of %d', [succ(FFileIdx),FFileCount]));
   FreeAndNil(FOriginalFile);
   FreeAndNil(FModifiedFile);
 
   FOriginalFile := TStringList.Create;
   FModifiedFile := TStringList.Create;
+  slOriginalFileLines :=TStringList.Create;
   try
     FOriginalFile.LoadFromFile(FCurrentFilename);
 {$IFDEF SUPPORTS_UNICODE}
     FOriginalFile.DefaultEncoding := FOriginalFile.Encoding;
 {$ENDIF}
+    slOriginalFileLines.Assign(FOriginalFile);
     FCurrentFileChangeCount := 0;
     FKeepGoing := 0;
 
-    HandleOptionList(slOptionsList);
-
-    WriteUserMessage(Format('Changed %d line%s.', [FCurrentFileChangeCount, IfThen(FCurrentFileChangeCount > 1, 's', '')]));
+    WriteUserMessage(Format('       Before: %d line%s', [FOriginalFile.Count,IfThen(FOriginalFile.Count>1,'s','')]));
+    HandleOptionList(slOptionsList,sOriginOfLines,0);
+    WriteUserMessage(Format('        After: %d line%s', [FOriginalFile.Count,IfThen(FOriginalFile.Count>1,'s','')]));
+    WriteUserMessage(Format('Modifications: %d', [FCurrentFileChangeCount]));
 
     if FCurrentFileChangeCount > 0 then
     begin
-      bakfn := FCurrentFilename + '.bak';
-      if TFileSystem.FileExists(bakfn) then
-        WriteUserMessage(Format('File "%s" already exists, will not overwrite it.', [bakfn]))
-      else
-      begin
-        WriteUserMessage(Format('Writing backup to "%s"', [bakfn]));
-        FModifiedFile.SaveToFile(bakfn);
-      end;
-      FOriginalFile.SaveToFile(FCurrentFilename, TEncoding.UTF8);
+      iAttemptIndex:=1;
+      repeat
+        case iAttemptIndex of
+          1: bakfn := FCurrentFilename + '.bak'
+          else bakfn := FCurrentFilename + '.bak('+iAttemptIndex.ToString+')';
+        end;
+        inc(iAttemptIndex);
+      until not TFileSystem.FileExists(bakfn) ;
+      FOriginalFile.SaveToFile(bakfn);
+      WriteUserMessage(Format('  Backup file: "%s"', [bakfn]));
+      FOriginalFile.SaveToFile(FCurrentFilename, FOriginalFile.DefaultEncoding);
     end;
 
   finally
+    FreeAndNil(slOriginalFileLines);
     FreeAndNil(FOriginalFile);
     FreeAndNil(FModifiedFile);
   end;
 end;
 
 { TDprojFilterMain.HandleOptionList }
-function TDprojFilterMain.HandleOptionList(const slOptionsList: TStringList): integer;
+function TDprojFilterMain.HandleOptionList(const slOptionsList: TStringList;const sOriginOfLines:string;const iDeepLevel:integer): integer;
 var
   iCurrentOptionLine: Integer;
 begin
@@ -191,16 +209,19 @@ begin
   iCurrentOptionLine := 0;
   while (iCurrentOptionLine < slOptionsList.Count) and (FKeepGoing = 0) do
   begin
-    FKeepGoing := ParseOptionLine(slOptionsList.Strings[iCurrentOptionLine]);
-    if FKeepGoing = 0 then
+    if (slOptionsList.Strings[iCurrentOptionLine]<>'') AND (LeftStr(slOptionsList.Strings[iCurrentOptionLine],2)<>'//') then
     begin
-      if isOptionCommandsToDo then
+      FKeepGoing := ParseOptionLine(slOptionsList.Strings[iCurrentOptionLine],IfThen(iDeepLevel=0,sCOMMANDLINENAME, sOriginOfLines+' line #'+succ(iCurrentOptionLine).ToString),iDeepLevel);
+      if FKeepGoing = 0 then
       begin
-        FKeepGoing := HandleParamFile;
-        if FKeepGoing = 0 then
+        if isOptionCommandsToDo then
         begin
-          FOriginalFile.Assign(FModifiedFile);
-          FModifiedFile.Clear;
+          FKeepGoing := HandleParamFile;
+          if FKeepGoing = 0 then
+          begin
+            FOriginalFile.Assign(FModifiedFile);
+            FModifiedFile.Clear;
+          end;
         end;
       end;
     end;
@@ -299,28 +320,28 @@ end;
 
 procedure TDprojFilterMain.FlushOptionCommands;
 begin
-  FDeleteLine := '{0315ED3B-FB6C-410C-82EB-15E2D0CCF22A}'+'{A54D8647-6B69-44AD-8493-2C419E9D5953}';
-  FChangeFrom := '{2169FEEA-5E42-4FF2-BD3C-249315C77216}'+'{C1E31065-92D0-432A-9643-C9C718DDB13B}';
+  FDeleteLine := sBARELYIMPOSSIBLEVALUE;
+  FChangeFrom := sBARELYIMPOSSIBLEVALUE;
   FChangeTo := '';
-  FRegExReplaceFrom := '{7246139A-A377-451D-80E3-2CDB4C068D01}'+'{77F749A5-1483-4E7F-BD36-7A1399CF9FCC}';
+  FRegExReplaceFrom := sBARELYIMPOSSIBLEVALUE;
   FRegExReplaceTo := '';
-  FInsertAfter := '{DB34DA7D-D879-48A4-8EDB-F35883AD0E96}'+'{BC3A936A-975B-408A-83A5-E7FDA8454B53}';
+  FInsertAfter := sBARELYIMPOSSIBLEVALUE;
   FInsert := '';
 end;
 
 function TDprojFilterMain.isOptionCommandsToDo: boolean;
 begin
-  if FDeleteLine <> '' then
+  if FDeleteLine <> sBARELYIMPOSSIBLEVALUE then
     result := True
-  else if FChangeFrom <> '' then
+  else if FChangeFrom <> sBARELYIMPOSSIBLEVALUE then
     result := True
   else if FChangeTo <> '' then
     result := True
-  else if FRegExReplaceFrom <> '' then
+  else if FRegExReplaceFrom <> sBARELYIMPOSSIBLEVALUE then
     result := True
   else if FRegExReplaceTo <> '' then
     result := True
-  else if FInsertAfter <> '' then
+  else if FInsertAfter <> sBARELYIMPOSSIBLEVALUE then
     result := True
   else if FInsert <> '' then
     result := True
@@ -335,17 +356,23 @@ var
 begin
   sErrorLine:='You must pass at least one of the following options: '+#$0D#$0A;
   for iOptionIndex:=0 to pred(slKeyWords.Count) do
-    sErrorLine:=sErrorLine+'  '+slKeyWords.Strings[iOptionIndex]+#$0D+#$0A;
+    sErrorLine:=sErrorLine+'          '+slKeyWords.Strings[iOptionIndex]+#$0D+#$0A;
   raise Exception.Create(sErrorLine);
 end;
 
 { TDprojFilterMain.ParseOptionLine }
-function TDprojFilterMain.ParseOptionLine(const sOptionLine: string): integer;
+function TDprojFilterMain.ParseOptionLine(const sOptionLine: string; const sOriginOfLine:string;const iDeepLevel:integer): integer;
 var
   OptionsOK: boolean;
   sOptionFilename: string;
   slOptionListOnTheFly: TStringList;
-  iLineIndex:integer;
+
+  procedure RaiseExceptionWithErrorMessage(sErrorMessage:string);
+  begin
+    WriteUserMessage('ERROR!'+#$0D+#$0A+'Origin: '+ sOriginOfLine+#$0D#$0A+'  Line: '+sOptionLine+#$0D#$0A+'  Type: '+sErrorMessage, ouscERROR);
+    halt(2);
+  end;
+
 begin
   result:=1;
   FlushOptionCommands;
@@ -353,95 +380,96 @@ begin
 
   FGetOpt.ParamsFoundList.Clear;
   FGetOpt.OptionsFoundList.Clear;
-  FGetOpt.ParseAssumingJustOptions(sOptionLine);
+  try
+    FGetOpt.ParseAssumingJustOptions(sOptionLine);
 
-  if FGetOpt.OptionPassed(slKeyWords.Strings[KWD_DeleteLine], FDeleteLine) then OptionsOK := True;
+    if FGetOpt.OptionPassed(slKeyWords.Strings[KWD_DeleteLine], FDeleteLine) then OptionsOK := True;
 
-  if FGetOpt.OptionPassed(slKeyWords.Strings[KWD_ChangeFrom], FChangeFrom) then
-  begin
-    if FGetOpt.OptionPassed(slKeyWords.Strings[KWD_ChangeTo], FChangeTo) then
+    if FGetOpt.OptionPassed(slKeyWords.Strings[KWD_ChangeFrom], FChangeFrom) then
     begin
-      OptionsOK := True;
+      if FGetOpt.OptionPassed(slKeyWords.Strings[KWD_ChangeTo], FChangeTo) then
+        OptionsOK := True
+      else
+        RaiseExceptionWithErrorMessage('--'+slKeyWords.Strings[KWD_ChangeFrom]+' also requires --'+slKeyWords.Strings[KWD_ChangeTo]+' option');
     end
     else
-      raise Exception.Create('--'+slKeyWords.Strings[KWD_ChangeFrom]+' also requires --'+slKeyWords.Strings[KWD_ChangeTo]+' option');
-  end
-  else
-  begin
-    if FGetOpt.OptionPassed(slKeyWords.Strings[KWD_ChangeTo], FChangeTo) then
-      raise Exception.Create('--'+slKeyWords.Strings[KWD_ChangeTo]+' is not allowed without a --'+slKeyWords.Strings[KWD_ChangeFrom]+' option');
-  end;
-
-  if FGetOpt.OptionPassed(slKeyWords.Strings[KWD_RegExReplaceFrom], FRegExReplaceFrom) then
-  begin
-    if FGetOpt.OptionPassed(slKeyWords.Strings[KWD_RegExReplaceTo], FRegExReplaceTo) then
     begin
-      OptionsOK := True;
-    end
-    else
-      raise Exception.Create('--'+slKeyWords.Strings[KWD_RegExReplaceFrom]+' also requires --'+slKeyWords.Strings[KWD_RegExReplaceTo]+' option');
-  end
-  else
-  begin
-    if FGetOpt.OptionPassed(slKeyWords.Strings[KWD_RegExReplaceTo], FRegExReplaceTo) then
-      raise Exception.Create('--'+slKeyWords.Strings[KWD_RegExReplaceTo]+' is not allowed without a --'+slKeyWords.Strings[KWD_RegExReplaceFrom]+' option');
-  end;
-
-  FINsertAfterAllowDuplicates := False;
-  FInsertAfterAll := False;
-  if FGetOpt.OptionPassed(slKeyWords.Strings[KWD_InsertAfter], FInsertAfter) then
-  begin
-    if FGetOpt.OptionPassed(slKeyWords.Strings[KWD_Insert], FInsert) then
-    begin
-      OptionsOK := True;
-    end
-    else
-      raise Exception.Create('--'+slKeyWords.Strings[KWD_InsertAfter]+' also requires an --'+slKeyWords.Strings[KWD_Insert]+' option');
-    FInsertAfterAll := FGetOpt.OptionPassed(slKeyWords.Strings[KWD_InsertAfterAll]);
-    FINsertAfterAllowDuplicates := FGetOpt.OptionPassed(slKeyWords.Strings[KWD_InsertAfterAllowDuplicates]);
-  end
-  else
-  begin
-    if FGetOpt.OptionPassed(slKeyWords.Strings[KWD_Insert], FInsert) then
-      raise Exception.Create('--'+slKeyWords.Strings[KWD_Insert]+' is not allowed without an --'+slKeyWords.Strings[KWD_InsertAfter]+' option');
-    if FGetOpt.OptionPassed(slKeyWords.Strings[KWD_InsertAfterAll]) then
-      raise Exception.Create('--'+slKeyWords.Strings[KWD_InsertAfterAll]+' is not allowed without an --'+slKeyWords.Strings[KWD_InsertAfter]+' option');
-    if FGetOpt.OptionPassed(slKeyWords.Strings[KWD_InsertAfterAllowDuplicates]) then
-      raise Exception.Create('--'+slKeyWords.Strings[KWD_InsertAfterAllowDuplicates]+' is not allowed without an --'+slKeyWords.Strings[KWD_InsertAfter]+' option');
-  end;
-
-  if FGetOpt.OptionPassed(slKeyWords.Strings[KWD_GroupOptions], sOptionFilename) then
-  begin
-    slOptionListOnTheFly := TStringList.Create;
-    try
-      sOptionFilename:=SimpleDequoteString(sOptionFilename);
-      slOptionListOnTheFly.LoadFromFile(sOptionFilename);
-      for iLineIndex:=pred(slOptionListOnTheFly.Count) downto 0 do
-        if (Trim(slOptionListOnTheFly.Strings[iLineIndex])='') or (LeftStr(Trim(slOptionListOnTheFly.Strings[iLineIndex]),2)='//')  then
-          slOptionListOnTheFly.Delete(iLineIndex);
-      if slOptionListOnTheFly.Count>0 then
-        HandleOptionList(slOptionListOnTheFly);
-    finally
-      FreeAndNil(slOptionListOnTheFly);
+      if FGetOpt.OptionPassed(slKeyWords.Strings[KWD_ChangeTo], FChangeTo) then
+        RaiseExceptionWithErrorMessage('--'+slKeyWords.Strings[KWD_ChangeTo]+' is not allowed without a --'+slKeyWords.Strings[KWD_ChangeFrom]+' option');
     end;
-    FlushOptionCommands;
-    OptionsOk := True;
-  end;
 
-  if not OptionsOK then
-  begin
-    RaiseExceptionSinceNoOptions;
-  end
-  else
-  begin
-    FDeleteLine := SimpleDequoteString(FDeleteLine);
-    FChangeFrom := SimpleDequoteString(FChangeFrom);
-    FChangeTo := SimpleDequoteString(FChangeTo);
-    FRegExReplaceFrom := SimpleDequoteString(FRegExReplaceFrom);
-    FRegExReplaceTo := SimpleDequoteString(FRegExReplaceTo);
-    FInsertAfter := SimpleDequoteString(FInsertAfter);
-    FInsert := SimpleDequoteString(FInsert);
-    result := 0;
+    if FGetOpt.OptionPassed(slKeyWords.Strings[KWD_RegExReplaceFrom], FRegExReplaceFrom) then
+    begin
+      if FGetOpt.OptionPassed(slKeyWords.Strings[KWD_RegExReplaceTo], FRegExReplaceTo) then
+      begin
+        OptionsOK := True;
+      end
+      else
+        RaiseExceptionWithErrorMessage('--'+slKeyWords.Strings[KWD_RegExReplaceFrom]+' also requires --'+slKeyWords.Strings[KWD_RegExReplaceTo]+' option');
+    end
+    else
+    begin
+      if FGetOpt.OptionPassed(slKeyWords.Strings[KWD_RegExReplaceTo], FRegExReplaceTo) then
+        RaiseExceptionWithErrorMessage('--'+slKeyWords.Strings[KWD_RegExReplaceTo]+' is not allowed without a --'+slKeyWords.Strings[KWD_RegExReplaceFrom]+' option');
+    end;
+
+    FINsertAfterAllowDuplicates := False;
+    FInsertAfterAll := False;
+    if FGetOpt.OptionPassed(slKeyWords.Strings[KWD_InsertAfter], FInsertAfter) then
+    begin
+      if FGetOpt.OptionPassed(slKeyWords.Strings[KWD_Insert], FInsert) then
+      begin
+        OptionsOK := True;
+      end
+      else
+        RaiseExceptionWithErrorMessage('--'+slKeyWords.Strings[KWD_InsertAfter]+' also requires an --'+slKeyWords.Strings[KWD_Insert]+' option');
+      FInsertAfterAll := FGetOpt.OptionPassed(slKeyWords.Strings[KWD_InsertAfterAll]);
+      FINsertAfterAllowDuplicates := FGetOpt.OptionPassed(slKeyWords.Strings[KWD_InsertAfterAllowDuplicates]);
+    end
+    else
+    begin
+      if FGetOpt.OptionPassed(slKeyWords.Strings[KWD_Insert], FInsert) then
+        RaiseExceptionWithErrorMessage('--'+slKeyWords.Strings[KWD_Insert]+' is not allowed without an --'+slKeyWords.Strings[KWD_InsertAfter]+' option');
+      if FGetOpt.OptionPassed(slKeyWords.Strings[KWD_InsertAfterAll]) then
+        RaiseExceptionWithErrorMessage('--'+slKeyWords.Strings[KWD_InsertAfterAll]+' is not allowed without an --'+slKeyWords.Strings[KWD_InsertAfter]+' option');
+      if FGetOpt.OptionPassed(slKeyWords.Strings[KWD_InsertAfterAllowDuplicates]) then
+        RaiseExceptionWithErrorMessage('--'+slKeyWords.Strings[KWD_InsertAfterAllowDuplicates]+' is not allowed without an --'+slKeyWords.Strings[KWD_InsertAfter]+' option');
+    end;
+
+    if FGetOpt.OptionPassed(slKeyWords.Strings[KWD_GroupOptions], sOptionFilename) then
+    begin
+      slOptionListOnTheFly := TStringList.Create;
+      try
+        sOptionFilename:=SimpleDequoteString(sOptionFilename);
+        slOptionListOnTheFly.LoadFromFile(sOptionFilename);
+        HandleOptionList(slOptionListOnTheFly,sOriginOfLine+' ('+sOptionLine+')'+#$0D#$0A+'        '+slKeyWords.Strings[KWD_GroupOptions]+' from file "'+sOptionFilename+'"',succ(iDeepLevel));
+      finally
+        FreeAndNil(slOptionListOnTheFly);
+      end;
+      FlushOptionCommands;
+      OptionsOk := True;
+    end;
+
+    if not OptionsOK then
+    begin
+      RaiseExceptionSinceNoOptions;
+    end
+    else
+    begin
+      FDeleteLine := SimpleDequoteString(FDeleteLine);
+      FChangeFrom := SimpleDequoteString(FChangeFrom);
+      FChangeTo := SimpleDequoteString(FChangeTo);
+      FRegExReplaceFrom := SimpleDequoteString(FRegExReplaceFrom);
+      FRegExReplaceTo := SimpleDequoteString(FRegExReplaceTo);
+      FInsertAfter := SimpleDequoteString(FInsertAfter);
+      FInsert := SimpleDequoteString(FInsert);
+      result := 0;
+    end;
+  except
+    on e: Exception do
+    begin
+      RaiseExceptionWithErrorMessage(e.Message);
+    end;
   end;
 end;
 
@@ -450,7 +478,7 @@ begin
   inherited;
   FGetOpt.RegisterParam('filename', 'File(s) to process.\nWildcards are allowed like *.dproj, *.txt, etc.\n@Files.lst will be read line per line and process as well.', 1, MaxInt);
   FGetOpt.RegisterOption(slKeyWords.Strings[KWD_DeleteLine], 'Delete a line matching "value".\nBlanks at the beginning and/or ending of the lines are ignored prior the evaluation.\nExample: --'+slKeyWords.Strings[KWD_DeleteLine]+'="<DCC_DcpOutput>..\..\lib\16</DCC_DcpOutput>"', True);
-  FGetOpt.RegisterOption(slKeyWords.Strings[KWD_ChangeFrom], 'Change a line matching the "value" to the one of --'+slKeyWords.Strings[KWD_ChangeTo]+'.\nExample: --'+slKeyWords.Strings[KWD_ChangeFrom]+'="<DCC_RemoteDebug>true" --'+slKeyWords.Strings[KWD_ChangeTo]+'="<DCC_RemoteDebug>false"', True);
+  FGetOpt.RegisterOption(slKeyWords.Strings[KWD_ChangeFrom], 'Change a line matching the "value" to the one of --'+slKeyWords.Strings[KWD_ChangeTo]+'.\nIt checks for the whole line, not part of the line.\nBut blanks at the beginning and/or ending of the lines are ignored prior the evaluation.\nReplacement will be added with the same indentation as the original text.\nSee option --'+slKeyWords.Strings[KWD_RegExReplaceFrom]+' for replacement inside part of the line.\nExample: --'+slKeyWords.Strings[KWD_ChangeFrom]+'="<DCC_RemoteDebug>true" --'+slKeyWords.Strings[KWD_ChangeTo]+'="<DCC_RemoteDebug>false"', True);
   FGetOpt.RegisterOption(slKeyWords.Strings[KWD_ChangeTo], 'Gives the new content for the --'+slKeyWords.Strings[KWD_ChangeFrom]+' option.\nSee option --'+slKeyWords.Strings[KWD_ChangeFrom]+'.', True);
   FGetOpt.RegisterOption(slKeyWords.Strings[KWD_RegExReplaceFrom], 'Idem as --'+slKeyWords.Strings[KWD_ChangeFrom]+' but with "value" being a regular expression.\nMust be paired with --'+slKeyWords.Strings[KWD_RegExReplaceTo]+'.', True);
   FGetOpt.RegisterOption(slKeyWords.Strings[KWD_RegExReplaceTo], 'Same as '+slKeyWords.Strings[KWD_ChangeFrom]+' but when using Regular Expression.\nSee option --'+slKeyWords.Strings[KWD_RegExReplaceFrom]+'.', True);

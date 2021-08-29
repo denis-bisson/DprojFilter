@@ -310,7 +310,8 @@ begin
     end;
     on e: Exception do
     begin
-      s := 'Exception: ' + e.Message + ' (' + e.ClassName + ')';
+      s := 'Exception: '+ #$0D#$0A+e.Message;
+      if e.ClassName<>'Exception' then s:=s+#$0D#$0A+'('+e.ClassName+')';
       WriteUserMessage(s, ouscERROR);
       FExitCode := 1;
     end;

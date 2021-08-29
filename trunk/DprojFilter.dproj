@@ -104,8 +104,8 @@
         <Manifest_File>$(BDS)\bin\default_app.manifest</Manifest_File>
         <VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
         <VerInfo_MinorVer>18</VerInfo_MinorVer>
-        <VerInfo_Build>536</VerInfo_Build>
-        <VerInfo_Keys>CompanyName=Open Source;FileDescription=Manipulate;FileVersion=1.18.0.536;InternalName=DprojFilter;LegalCopyright=2021;LegalTrademarks=Open Source;OriginalFilename=DprojFilter.exe;ProductName=DprojFilter;ProductVersion=1.18;Comments=Made with Delphi</VerInfo_Keys>
+        <VerInfo_Build>605</VerInfo_Build>
+        <VerInfo_Keys>CompanyName=Open Source;FileDescription=Manipulate;FileVersion=1.18.0.605;InternalName=DprojFilter;LegalCopyright=2021;LegalTrademarks=Open Source;OriginalFilename=DprojFilter.exe;ProductName=DprojFilter;ProductVersion=1.18;Comments=Made with Delphi</VerInfo_Keys>
         <VerInfo_AutoIncVersion>true</VerInfo_AutoIncVersion>
         <DCC_ConsoleTarget>true</DCC_ConsoleTarget>
         <DCC_OutputDRCFile>true</DCC_OutputDRCFile>
@@ -113,7 +113,7 @@
         <DCC_DebugInfoInExe>true</DCC_DebugInfoInExe>
         <DCC_MapFile>2</DCC_MapFile>
         <Debugger_CWD>C:\tmp\TestFiles</Debugger_CWD>
-        <Debugger_RunParams>--RegExReplaceFrom=&quot;&apos;ChangeFrom&apos;&quot; --RegExReplaceTo=&quot;slKeyWords.Strings[KWD_ChangeFrom]&quot; u_DprojFilterMain.pas</Debugger_RunParams>
+        <Debugger_RunParams>--GroupOptions=&quot;Job.lst&quot; test.txt</Debugger_RunParams>
     </PropertyGroup>
     <ProjectExtensions>
         <Borland.Personality>Delphi.Personality.12</Borland.Personality>
@@ -234,6 +234,12 @@
                         <Overwrite>true</Overwrite>
                     </Platform>
                 </DeployFile>
+                <DeployFile LocalName="DprojFilter.exe" Configuration="Debug" Class="ProjectOutput">
+                    <Platform Name="Win32">
+                        <RemoteName>DprojFilter.exe</RemoteName>
+                        <Overwrite>true</Overwrite>
+                    </Platform>
+                </DeployFile>
                 <DeployFile LocalName="dzlib\templates\t_dzListTemplate.tpl" Configuration="Release" Class="ProjectFile">
                     <Platform Name="Win32">
                         <RemoteDir>.\</RemoteDir>
@@ -243,12 +249,6 @@
                 <DeployFile LocalName="dzlib\templates\t_dzObjectListTemplate.tpl" Configuration="Debug" Class="ProjectFile">
                     <Platform Name="Win32">
                         <RemoteDir>.\</RemoteDir>
-                        <Overwrite>true</Overwrite>
-                    </Platform>
-                </DeployFile>
-                <DeployFile LocalName="DprojFilter.exe" Configuration="Debug" Class="ProjectOutput">
-                    <Platform Name="Win32">
-                        <RemoteName>DprojFilter.exe</RemoteName>
                         <Overwrite>true</Overwrite>
                     </Platform>
                 </DeployFile>
@@ -1265,12 +1265,4 @@
     <Import Project="$(BDS)\Bin\CodeGear.Delphi.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Delphi.Targets')"/>
     <Import Project="$(APPDATA)\Embarcadero\$(BDSAPPDATABASEDIR)\$(PRODUCTVERSION)\UserTools.proj" Condition="Exists('$(APPDATA)\Embarcadero\$(BDSAPPDATABASEDIR)\$(PRODUCTVERSION)\UserTools.proj')"/>
     <Import Project="$(MSBuildProjectName).deployproj" Condition="Exists('$(MSBuildProjectName).deployproj')"/>
-    <PropertyGroup Condition="'$(Config)'=='Release' And '$(Platform)'=='Win32'">
-        <PreBuildEvent/>
-        <PreBuildEventIgnoreExitCode>True</PreBuildEventIgnoreExitCode>
-        <PreLinkEvent/>
-        <PreLinkEventIgnoreExitCode>True</PreLinkEventIgnoreExitCode>
-        <PostBuildEvent><![CDATA[]]></PostBuildEvent>
-        <PostBuildEventIgnoreExitCode>True</PostBuildEventIgnoreExitCode>
-    </PropertyGroup>
 </Project>

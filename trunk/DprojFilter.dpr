@@ -20,7 +20,8 @@ program DprojFilter;
 {$APPTYPE CONSOLE}
 
 uses
-  SysUtils,
+  System.SysUtils,
+  System.StrUtils,
   u_DprojFilterMain in 'u_DprojFilterMain.pas',
   u_dzCmdLineParser in 'dzlib\src\u_dzCmdLineParser.pas',
   u_dzCmdLineParserStates in 'dzlib\src\u_dzCmdLineParserStates.pas',
@@ -53,14 +54,45 @@ uses
 
 { DprojFilter_LogUserMessage }
 procedure DprojFilter_LogUserMessage(const sMsgToShow: string; const iContext: tOUS_Context);
+var
+  sLineHeader:string;
+  iLastPosNewLine, iPosNewLine:integer;
+  bIsFirstLine:boolean;
+
+  procedure AddChunkToResult(sChunk:string);
+  begin
+    WriteLn(sLineHeader+sChunk);
+    if bIsFirstLine then
+    begin
+       sLineHeader:=StringOfChar(' ',length(sLineHeader));
+       bIsFirstLine:=False;
+    end;
+  end;
 begin
   //We're building a plain console application.
   //We will ourput to console, both regular and error message to the same output.
   //For the error, we will add '>>> ' at the beginning of the line to attempt to attract the attention.
+  bIsFirstLine:=True;
+
   case iContext of
-    ouscINFORMATION: WriteLn(sMsgToShow);
-    ouscERROR: WriteLn('>>> ' + sMsgToShow);
+    ouscINFORMATION: sLineHeader:='';
+    ouscERROR: sLineHeader:='>>> ';
   end;
+
+  iLastPosNewLine:=1;
+  repeat
+    iPosNewLine := posex(#$0D#$0A,sMsgToShow,iLastPosNewLine);
+    if iPosNewLine=0 then
+    begin
+      AddChunkToResult(copy(sMsgToShow, iLastPosNewLine));
+    end
+    else
+    begin
+      AddChunkToResult(copy(sMsgToShow, iLastPosNewLine, iPosNewLine-iLastPosNewLine));
+      iLastPosNewLine:=succ(succ(iPosNewLine));
+     end;
+  until iPosNewLine=0;
+
 end;
 
 { DprojFilter_DisplayAppInfo }
