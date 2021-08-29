@@ -441,8 +441,15 @@ begin
       slOptionListOnTheFly := TStringList.Create;
       try
         sOptionFilename:=SimpleDequoteString(sOptionFilename);
+        if FileExists(sOptionFilename) then
+        begin
         slOptionListOnTheFly.LoadFromFile(sOptionFilename);
         HandleOptionList(slOptionListOnTheFly,sOriginOfLine+' ('+sOptionLine+')'+#$0D#$0A+'        '+slKeyWords.Strings[KWD_GroupOptions]+' from file "'+sOptionFilename+'"',succ(iDeepLevel));
+        end
+        else
+        begin
+          RaiseExceptionWithErrorMessage('File to include not found "'+sOptionFilename+'"');
+        end;
       finally
         FreeAndNil(slOptionListOnTheFly);
       end;
