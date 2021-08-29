@@ -1,4 +1,4 @@
-//********************************************************************************
+﻿//********************************************************************************
 //* DprojFilter                                                                  *
 //* -----------------------------------------------------------------------------*
 //* Command line parser and other utilities from dzlib                           *
@@ -70,7 +70,7 @@ type
   public
     constructor Create(const _Name, _Description: string; _MinCount, _MaxCount: integer);
     function GetCmdMask: string;
-    function GetDescription(_Indent: integer): string;
+    function GetDescription: string;
     property Name: string read FName;
     property Description: string read FDescription;
     property MinCount: integer read FMinCount;
@@ -114,9 +114,41 @@ begin
     Result := '[' + Result + ']';
 end;
 
-function TParamDesc.GetDescription(_Indent: integer): string;
+function TParamDesc.GetDescription: string;
+var
+  iLastPosNewLine,iPosNewLine:integer;
+  sLineHeader:string;
+
+  procedure AddChunkToResult(sChunk:string);
+  begin
+    if sLineHeader='' then
+    begin
+       sLineHeader := StringOfChar(' ',length(Result));
+       Result:=Result+sChunk;
+    end
+    else
+    begin
+      Result:=Result+#$0D#$0A+sLineHeader+sChunk;
+    end;
+  end;
+
 begin
-  Result := fName + StringOfChar(' ', _Indent - Length(fName) - 3) + ' : ' + fDescription;
+  Result := fName + ' : ';
+  sLineHeader := '';
+  iLastPosNewLine := 1;
+
+  repeat
+    iPosNewLine := posex('\n',FDescription,iLastPosNewLine);
+    if iPosNewLine=0 then
+    begin
+      AddChunkToResult(copy(FDescription, iLastPosNewLine));
+    end
+    else
+    begin
+      AddChunkToResult(copy(FDescription, iLastPosNewLine, iPosNewLine-iLastPosNewLine));
+      iLastPosNewLine:=succ(succ(iPosNewLine));
+     end;
+  until iPosNewLine=0;
 end;
 
 end.

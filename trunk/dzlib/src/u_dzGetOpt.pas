@@ -1,4 +1,4 @@
-//********************************************************************************
+﻿//********************************************************************************
 //* DprojFilter                                                                  *
 //* -----------------------------------------------------------------------------*
 //* Command line parser and other utilities from dzlib                           *
@@ -179,8 +179,8 @@ type
     ///<summary> returns a commandline with all the parameters and option, e.g. [--option1=value1] <param1> [<param2>] </summary>
     function GetCmdLineDesc: string;
     ///<summary> returns a description for all the options and parameters </summary>
-    function GetOptionHelp(_Indent: Integer = 20): string;
-    function GetParamHelp(_Indent: Integer = 20): string;
+    function GetOptionHelp: string;
+    function GetParamHelp: string;
     ///<summary> the program's name as either passed to the constructor or read from ParamStr(0). </summary>
     property ProgName: string read FProgName;
     ///<summary> List of all parameters found </summary>
@@ -280,7 +280,7 @@ begin
   end;
 end;
 
-function TGetOpt.GetOptionHelp(_Indent: Integer): string;
+function TGetOpt.GetOptionHelp: string;
 var
   i: Integer;
   OptionDesc: TOptionDesc;
@@ -288,11 +288,11 @@ begin
   Result := '';
   for i := 0 to FOptionDescList.Count - 1 do begin
     OptionDesc := FOptionDescList[i];
-    if not OptionDesc.isHidden then begin
-
+    if not OptionDesc.isHidden then
+    begin
       if Result <> '' then
-        Result := Result + #13#10;
-      Result := Result + OptionDesc.GetDescription(_Indent);
+        Result := Result + #$0D#$0A#$0D#$0A;
+      Result := Result + OptionDesc.GetDescription;
     end;
   end;
 end;
@@ -303,7 +303,7 @@ begin
     Result := '';
 end;
 
-function TGetOpt.GetParamHelp(_Indent: Integer): string;
+function TGetOpt.GetParamHelp: string;
 var
   i: Integer;
   ParamDesc: TParamDesc;
@@ -313,7 +313,7 @@ begin
     ParamDesc := FParamDescList[i];
     if Result <> '' then
       Result := Result + #13#10;
-    Result := Result + ParamDesc.GetDescription(_Indent);
+    Result := Result + ParamDesc.GetDescription;
   end;
 end;
 

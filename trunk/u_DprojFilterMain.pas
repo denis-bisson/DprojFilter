@@ -1,4 +1,4 @@
-//********************************************************************************
+﻿//********************************************************************************
 //* DprojFilter                                                                  *
 //* -----------------------------------------------------------------------------*
 //* The main application unit file.                                              *
@@ -51,6 +51,7 @@ type
     function ParseOptionLine(const sOptionLine: string): integer;
     procedure FlushOptionCommands;
     function isOptionCommandsToDo: boolean;
+    procedure RaiseExceptionSinceNoOptions;
   protected
     procedure InitCmdLineParser; override;
     function doExecute: Integer; override;
@@ -59,9 +60,11 @@ type
 implementation
 
 uses
+  System.StrUtils,
   u_dzFileUtils,
   u_dzStringUtils,
-  u_dzMiscUtils, System.StrUtils;
+  u_dzMiscUtils,
+  u_DprojFilterOptionKeyWords;
 
 { TDprojFilterMain }
 
@@ -87,21 +90,21 @@ var
 begin
   Parameters := TStringList.Create;
   try
-    FGetOpt.ParamPassed('DprojFile', Parameters);
+    FGetOpt.ParamPassed('filename', Parameters);
 
     sOptionLine := '';
-    if FGetOpt.OptionPassed('DeleteLine', sMaybeAction) then sOptionLine := sOptionLine + IfThen(sOptionLine <> '', ' ', '') + '--DeleteLine=' + sMaybeAction;
-    if FGetOpt.OptionPassed('ChangeFrom', sMaybeAction) then sOptionLine := sOptionLine + IfThen(sOptionLine <> '', ' ', '') + '--ChangeFrom=' + sMaybeAction;
-    if FGetOpt.OptionPassed('ChangeTo', sMaybeAction) then sOptionLine := sOptionLine + IfThen(sOptionLine <> '', ' ', '') + '--ChangeTo=' + sMaybeAction;
-    if FGetOpt.OptionPassed('RegExReplaceFrom', sMaybeAction) then sOptionLine := sOptionLine + IfThen(sOptionLine <> '', ' ', '') + '--RegExReplaceFrom=' + sMaybeAction;
-    if FGetOpt.OptionPassed('RegExReplaceTo', sMaybeAction) then sOptionLine := sOptionLine + IfThen(sOptionLine <> '', ' ', '') + '--RegExReplaceTo=' + sMaybeAction;
-    if FGetOpt.OptionPassed('InsertAfter', sMaybeAction) then sOptionLine := sOptionLine + IfThen(sOptionLine <> '', ' ', '') + '--InsertAfter=' + sMaybeAction;
-    if FGetOpt.OptionPassed('Insert', sMaybeAction) then sOptionLine := sOptionLine + IfThen(sOptionLine <> '', ' ', '') + '--Insert=' + sMaybeAction;
-    if FGetOpt.OptionPassed('InsertAfterAll', sMaybeAction) then sOptionLine := sOptionLine + IfThen(sOptionLine <> '', ' ', '') + '--InsertAfterAll=' + sMaybeAction;
-    if FGetOpt.OptionPassed('InsertAfterAllowDuplicates', sMaybeAction) then sOptionLine := sOptionLine + IfThen(sOptionLine <> '', ' ', '') + '--InsertAfterAllowDuplicates=' + sMaybeAction;
-    if FGetOpt.OptionPassed('GroupOptions', sMaybeAction) then sOptionLine := sOptionLine + IfThen(sOptionLine <> '', ' ', '') + '--GroupOptions=' + sMaybeAction;
+    if FGetOpt.OptionPassed(slKeyWords.Strings[KWD_DeleteLine], sMaybeAction) then sOptionLine := sOptionLine + IfThen(sOptionLine <> '', ' ', '') + '--'+slKeyWords.Strings[KWD_DeleteLine]+'=' + sMaybeAction;
+    if FGetOpt.OptionPassed(slKeyWords.Strings[KWD_ChangeFrom], sMaybeAction) then sOptionLine := sOptionLine + IfThen(sOptionLine <> '', ' ', '') + '--'+slKeyWords.Strings[KWD_ChangeFrom]+'=' + sMaybeAction;
+    if FGetOpt.OptionPassed(slKeyWords.Strings[KWD_ChangeTo], sMaybeAction) then sOptionLine := sOptionLine + IfThen(sOptionLine <> '', ' ', '') + '--'+slKeyWords.Strings[KWD_ChangeTo]+'=' + sMaybeAction;
+    if FGetOpt.OptionPassed(slKeyWords.Strings[KWD_RegExReplaceFrom], sMaybeAction) then sOptionLine := sOptionLine + IfThen(sOptionLine <> '', ' ', '') + '--'+slKeyWords.Strings[KWD_RegExReplaceFrom]+'=' + sMaybeAction;
+    if FGetOpt.OptionPassed(slKeyWords.Strings[KWD_RegExReplaceTo], sMaybeAction) then sOptionLine := sOptionLine + IfThen(sOptionLine <> '', ' ', '') + '--'+slKeyWords.Strings[KWD_RegExReplaceTo]+'=' + sMaybeAction;
+    if FGetOpt.OptionPassed(slKeyWords.Strings[KWD_InsertAfter], sMaybeAction) then sOptionLine := sOptionLine + IfThen(sOptionLine <> '', ' ', '') + '--'+slKeyWords.Strings[KWD_InsertAfter]+'=' + sMaybeAction;
+    if FGetOpt.OptionPassed(slKeyWords.Strings[KWD_Insert], sMaybeAction) then sOptionLine := sOptionLine + IfThen(sOptionLine <> '', ' ', '') + '--'+slKeyWords.Strings[KWD_Insert]+'=' + sMaybeAction;
+    if FGetOpt.OptionPassed(slKeyWords.Strings[KWD_InsertAfterAll], sMaybeAction) then sOptionLine := sOptionLine + IfThen(sOptionLine <> '', ' ', '') + '--'+slKeyWords.Strings[KWD_InsertAfterAll]+'=' + sMaybeAction;
+    if FGetOpt.OptionPassed(slKeyWords.Strings[KWD_InsertAfterAllowDuplicates], sMaybeAction) then sOptionLine := sOptionLine + IfThen(sOptionLine <> '', ' ', '') + '--'+slKeyWords.Strings[KWD_InsertAfterAllowDuplicates]+'=' + sMaybeAction;
+    if FGetOpt.OptionPassed(slKeyWords.Strings[KWD_GroupOptions], sMaybeAction) then sOptionLine := sOptionLine + IfThen(sOptionLine <> '', ' ', '') + '--'+slKeyWords.Strings[KWD_GroupOptions]+'=' + sMaybeAction;
 
-    if sOptionLine = '' then raise Exception.Create('You must pass one of the options: --DeleteLine, --ChangeFrom, --RegExReplaceFrom or --InsertAfter');
+    if sOptionLine = '' then RaiseExceptionSinceNoOptions;
 
     slOptionList := TStringList.Create;
     try
@@ -221,7 +224,6 @@ begin
   try
     RegExpr.Expression := FRegExReplaceFrom;
     try
-
       InsertAfterDone := False;
       for i := 0 to FOriginalFile.Count - 1 do
       begin
@@ -297,12 +299,12 @@ end;
 
 procedure TDprojFilterMain.FlushOptionCommands;
 begin
-  FDeleteLine := '';
-  FChangeFrom := '';
+  FDeleteLine := '{0315ED3B-FB6C-410C-82EB-15E2D0CCF22A}'+'{A54D8647-6B69-44AD-8493-2C419E9D5953}';
+  FChangeFrom := '{2169FEEA-5E42-4FF2-BD3C-249315C77216}'+'{C1E31065-92D0-432A-9643-C9C718DDB13B}';
   FChangeTo := '';
-  FRegExReplaceFrom := '';
+  FRegExReplaceFrom := '{7246139A-A377-451D-80E3-2CDB4C068D01}'+'{77F749A5-1483-4E7F-BD36-7A1399CF9FCC}';
   FRegExReplaceTo := '';
-  FInsertAfter := '';
+  FInsertAfter := '{DB34DA7D-D879-48A4-8EDB-F35883AD0E96}'+'{BC3A936A-975B-408A-83A5-E7FDA8454B53}';
   FInsert := '';
 end;
 
@@ -326,13 +328,26 @@ begin
     result := False;
 end;
 
+procedure TDprojFilterMain.RaiseExceptionSinceNoOptions;
+var
+  sErrorLine:string;
+  iOptionIndex:integer;
+begin
+  sErrorLine:='You must pass at least one of the following options: '+#$0D#$0A;
+  for iOptionIndex:=0 to pred(slKeyWords.Count) do
+    sErrorLine:=sErrorLine+'  '+slKeyWords.Strings[iOptionIndex]+#$0D+#$0A;
+  raise Exception.Create(sErrorLine);
+end;
+
 { TDprojFilterMain.ParseOptionLine }
 function TDprojFilterMain.ParseOptionLine(const sOptionLine: string): integer;
 var
   OptionsOK: boolean;
   sOptionFilename: string;
   slOptionListOnTheFly: TStringList;
+  iLineIndex:integer;
 begin
+  result:=1;
   FlushOptionCommands;
   OptionsOK := False;
 
@@ -340,67 +355,72 @@ begin
   FGetOpt.OptionsFoundList.Clear;
   FGetOpt.ParseAssumingJustOptions(sOptionLine);
 
-  if FGetOpt.OptionPassed('DeleteLine', FDeleteLine) then OptionsOK := True;
+  if FGetOpt.OptionPassed(slKeyWords.Strings[KWD_DeleteLine], FDeleteLine) then OptionsOK := True;
 
-  if FGetOpt.OptionPassed('ChangeFrom', FChangeFrom) then
+  if FGetOpt.OptionPassed(slKeyWords.Strings[KWD_ChangeFrom], FChangeFrom) then
   begin
-    if FGetOpt.OptionPassed('ChangeTo', FChangeTo) then
+    if FGetOpt.OptionPassed(slKeyWords.Strings[KWD_ChangeTo], FChangeTo) then
     begin
       OptionsOK := True;
     end
     else
-      raise Exception.Create('--ChangeFrom also requires --ChangeTo option');
+      raise Exception.Create('--'+slKeyWords.Strings[KWD_ChangeFrom]+' also requires --'+slKeyWords.Strings[KWD_ChangeTo]+' option');
   end
   else
   begin
-    if FGetOpt.OptionPassed('ChangeTo', FChangeTo) then
-      raise Exception.Create('--ChangeTo is not allowed without a --ChangeFrom option');
+    if FGetOpt.OptionPassed(slKeyWords.Strings[KWD_ChangeTo], FChangeTo) then
+      raise Exception.Create('--'+slKeyWords.Strings[KWD_ChangeTo]+' is not allowed without a --'+slKeyWords.Strings[KWD_ChangeFrom]+' option');
   end;
 
-  if FGetOpt.OptionPassed('RegExReplaceFrom', FRegExReplaceFrom) then
+  if FGetOpt.OptionPassed(slKeyWords.Strings[KWD_RegExReplaceFrom], FRegExReplaceFrom) then
   begin
-    if FGetOpt.OptionPassed('RegExReplaceTo', FRegExReplaceTo) then
+    if FGetOpt.OptionPassed(slKeyWords.Strings[KWD_RegExReplaceTo], FRegExReplaceTo) then
     begin
       OptionsOK := True;
     end
     else
-      raise Exception.Create('--RegExReplaceFrom also requires --RegExReplaceTo option');
+      raise Exception.Create('--'+slKeyWords.Strings[KWD_RegExReplaceFrom]+' also requires --'+slKeyWords.Strings[KWD_RegExReplaceTo]+' option');
   end
   else
   begin
-    if FGetOpt.OptionPassed('RegExReplaceTo', FRegExReplaceTo) then
-      raise Exception.Create('--RegExReplaceTo is not allowed without a --RegExReplaceFrom option');
+    if FGetOpt.OptionPassed(slKeyWords.Strings[KWD_RegExReplaceTo], FRegExReplaceTo) then
+      raise Exception.Create('--'+slKeyWords.Strings[KWD_RegExReplaceTo]+' is not allowed without a --'+slKeyWords.Strings[KWD_RegExReplaceFrom]+' option');
   end;
 
   FINsertAfterAllowDuplicates := False;
   FInsertAfterAll := False;
-  if FGetOpt.OptionPassed('InsertAfter', FInsertAfter) then
+  if FGetOpt.OptionPassed(slKeyWords.Strings[KWD_InsertAfter], FInsertAfter) then
   begin
-    if FGetOpt.OptionPassed('Insert', FInsert) then
+    if FGetOpt.OptionPassed(slKeyWords.Strings[KWD_Insert], FInsert) then
     begin
       OptionsOK := True;
     end
     else
-      raise Exception.Create('--InsertAfter also requires an --Insert option');
-    FInsertAfterAll := FGetOpt.OptionPassed('InsertAfterAll');
-    FINsertAfterAllowDuplicates := FGetOpt.OptionPassed('InsertAfterAllowDuplicates');
+      raise Exception.Create('--'+slKeyWords.Strings[KWD_InsertAfter]+' also requires an --'+slKeyWords.Strings[KWD_Insert]+' option');
+    FInsertAfterAll := FGetOpt.OptionPassed(slKeyWords.Strings[KWD_InsertAfterAll]);
+    FINsertAfterAllowDuplicates := FGetOpt.OptionPassed(slKeyWords.Strings[KWD_InsertAfterAllowDuplicates]);
   end
   else
   begin
-    if FGetOpt.OptionPassed('Insert', FInsert) then
-      raise Exception.Create('--Insert is not allowed without an --InsertAfter option');
-    if FGetOpt.OptionPassed('InsertAfterAll') then
-      raise Exception.Create('--InsertAfterAll is not allowed without an --InsertAfter option');
-    if FGetOpt.OptionPassed('InsertAfterAllowDuplicates') then
-      raise Exception.Create('--InsertAfterAllowDuplicates is not allowed without an --InsertAfter option');
+    if FGetOpt.OptionPassed(slKeyWords.Strings[KWD_Insert], FInsert) then
+      raise Exception.Create('--'+slKeyWords.Strings[KWD_Insert]+' is not allowed without an --'+slKeyWords.Strings[KWD_InsertAfter]+' option');
+    if FGetOpt.OptionPassed(slKeyWords.Strings[KWD_InsertAfterAll]) then
+      raise Exception.Create('--'+slKeyWords.Strings[KWD_InsertAfterAll]+' is not allowed without an --'+slKeyWords.Strings[KWD_InsertAfter]+' option');
+    if FGetOpt.OptionPassed(slKeyWords.Strings[KWD_InsertAfterAllowDuplicates]) then
+      raise Exception.Create('--'+slKeyWords.Strings[KWD_InsertAfterAllowDuplicates]+' is not allowed without an --'+slKeyWords.Strings[KWD_InsertAfter]+' option');
   end;
 
-  if FGetOpt.OptionPassed('GroupOptions', sOptionFilename) then
+  if FGetOpt.OptionPassed(slKeyWords.Strings[KWD_GroupOptions], sOptionFilename) then
   begin
     slOptionListOnTheFly := TStringList.Create;
     try
+      sOptionFilename:=SimpleDequoteString(sOptionFilename);
       slOptionListOnTheFly.LoadFromFile(sOptionFilename);
-      HandleOptionList(slOptionListOnTheFly);
+      for iLineIndex:=pred(slOptionListOnTheFly.Count) downto 0 do
+        if (Trim(slOptionListOnTheFly.Strings[iLineIndex])='') or (LeftStr(Trim(slOptionListOnTheFly.Strings[iLineIndex]),2)='//')  then
+          slOptionListOnTheFly.Delete(iLineIndex);
+      if slOptionListOnTheFly.Count>0 then
+        HandleOptionList(slOptionListOnTheFly);
     finally
       FreeAndNil(slOptionListOnTheFly);
     end;
@@ -410,7 +430,7 @@ begin
 
   if not OptionsOK then
   begin
-    raise Exception.Create('You must pass one of the options: --DeleteLine, --ChangeFrom, --RegExReplaceFrom or --InsertAfter')
+    RaiseExceptionSinceNoOptions;
   end
   else
   begin
@@ -428,17 +448,17 @@ end;
 procedure TDprojFilterMain.InitCmdLineParser;
 begin
   inherited;
-  FGetOpt.RegisterParam('DprojFile', 'Dproj file(s) to process wildcards are allowed', 1, MaxInt);
-  FGetOpt.RegisterOption('DeleteLine', 'Delete a line matching the parameter. E.g. --DeleteLine="<DCC_DcpOutput>..\..\lib\16</DCC_DcpOutput>"', True);
-  FGetOpt.RegisterOption('ChangeFrom', 'Change a line matching the parameter to the parameter of --ChangeTo. E.g. --ChangeFrom="bla" --ChangeTo="blub"', True);
-  FGetOpt.RegisterOption('ChangeTo', 'Gives the new content for the ChangeFrom parameter. E.g. --ChangeFrom="bla" --ChangeTo="blub"', True);
-  FGetOpt.RegisterOption('RegExReplaceFrom', 'Assuming a given regular expression, replace it if found inside a line with the parameter of --RegExReplaceTo.', True);
-  FGetOpt.RegisterOption('RegExReplaceTo', 'Gives the new content for the RegExReplaceFrom parameter. E.g. --RegExReplaceFrom="Ver[0-9]" --RegExReplaceTo="Ver2"', True);
-  FGetOpt.RegisterOption('InsertAfter', 'Insert a new line after the one matching the parameter. Requires an --Insert option.', True);
-  FGetOpt.RegisterOption('Insert', 'Gives the line to insert for the --InsertAfter option.', True);
-  FGetOpt.RegisterOption('InsertAfterAll', 'If given, InsertAfter applies to all matching lines, if not, only to the first. Requires an --Insert option.', False);
-  FGetOpt.RegisterOption('InsertAfterAllowDuplicates', 'If given, InsertAfter will skip the check if the line to insert already exists. Requires an --Insert option.', False);
-  FGetOpt.RegisterOption('GroupOptions', 'Will assume given option will be a text file where each line is a series of options to execute.', True);
+  FGetOpt.RegisterParam('filename', 'File(s) to process.\nWildcards are allowed like *.dproj, *.txt, etc.\n@Files.lst will be read line per line and process as well.', 1, MaxInt);
+  FGetOpt.RegisterOption(slKeyWords.Strings[KWD_DeleteLine], 'Delete a line matching "value".\nBlanks at the beginning and/or ending of the lines are ignored prior the evaluation.\nExample: --'+slKeyWords.Strings[KWD_DeleteLine]+'="<DCC_DcpOutput>..\..\lib\16</DCC_DcpOutput>"', True);
+  FGetOpt.RegisterOption(slKeyWords.Strings[KWD_ChangeFrom], 'Change a line matching the "value" to the one of --'+slKeyWords.Strings[KWD_ChangeTo]+'.\nExample: --'+slKeyWords.Strings[KWD_ChangeFrom]+'="<DCC_RemoteDebug>true" --'+slKeyWords.Strings[KWD_ChangeTo]+'="<DCC_RemoteDebug>false"', True);
+  FGetOpt.RegisterOption(slKeyWords.Strings[KWD_ChangeTo], 'Gives the new content for the --'+slKeyWords.Strings[KWD_ChangeFrom]+' option.\nSee option --'+slKeyWords.Strings[KWD_ChangeFrom]+'.', True);
+  FGetOpt.RegisterOption(slKeyWords.Strings[KWD_RegExReplaceFrom], 'Idem as --'+slKeyWords.Strings[KWD_ChangeFrom]+' but with "value" being a regular expression.\nMust be paired with --'+slKeyWords.Strings[KWD_RegExReplaceTo]+'.', True);
+  FGetOpt.RegisterOption(slKeyWords.Strings[KWD_RegExReplaceTo], 'Same as '+slKeyWords.Strings[KWD_ChangeFrom]+' but when using Regular Expression.\nSee option --'+slKeyWords.Strings[KWD_RegExReplaceFrom]+'.', True);
+  FGetOpt.RegisterOption(slKeyWords.Strings[KWD_InsertAfter], slKeyWords.Strings[KWD_Insert]+' a new line after the one matching "Value".\nRequires an --'+slKeyWords.Strings[KWD_Insert]+' option.', True);
+  FGetOpt.RegisterOption(slKeyWords.Strings[KWD_Insert], 'Gives the line to insert for the --'+slKeyWords.Strings[KWD_InsertAfter]+' option.', True);
+  FGetOpt.RegisterOption(slKeyWords.Strings[KWD_InsertAfterAll], 'If given, --'+slKeyWords.Strings[KWD_InsertAfter]+' applies to all matching lines.\nIf not, only to the first.\nRequires an --'+slKeyWords.Strings[KWD_Insert]+' option.', False);
+  FGetOpt.RegisterOption(slKeyWords.Strings[KWD_InsertAfterAllowDuplicates], 'If given, --'+slKeyWords.Strings[KWD_InsertAfter]+' will skip the check if the line to insert already exists.\nRequires an --'+slKeyWords.Strings[KWD_Insert]+' option.', False);
+  FGetOpt.RegisterOption(slKeyWords.Strings[KWD_GroupOptions], 'Will assume "value" is a text file where each line is a series of options to execute.\nEmpty lines and lines beginning with "//" will be ignored.', True);
   FGetOpt.DequoteParams := False;
 end;
 

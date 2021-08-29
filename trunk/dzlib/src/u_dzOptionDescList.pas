@@ -1,4 +1,4 @@
-//********************************************************************************
+﻿//********************************************************************************
 //* DprojFilter                                                                  *
 //* -----------------------------------------------------------------------------*
 //* Command line parser and other utilities from dzlib                           *
@@ -82,7 +82,7 @@ type
     constructor Create(const _Names: array of string; const _Description: string;
       _HasValue: boolean = false; _IsHidden: boolean = false);
     destructor Destroy; override;
-    function GetDescription(_Indent: integer): string;
+    function GetDescription: string;
     property HasValue: boolean read FHasValue;
     property PrimaryName: string read FPrimaryName;
     property isHidden: boolean read FIsHidden write FIsHidden;
@@ -198,22 +198,54 @@ begin
   end;
 end;
 
-function TOptionDesc.GetDescription(_Indent: integer): string;
+function TOptionDesc.GetDescription: string;
 var
   i: integer;
-  Len: integer;
-  s: string;
+  iLenCurrent, iLonguest,iLastPosNewLine,iPosNewLine: integer;
+  s,sLineHeader: string;
+
+  procedure AddChunkToResult(sChunk:string);
+  begin
+    if sLineHeader='' then
+    begin
+       sLineHeader := StringOfChar(' ',(iLonguest+3));
+       Result:=Result+sChunk;
+    end
+    else
+    begin
+      Result:=Result+#$0D#$0A+sLineHeader+sChunk;
+    end;
+  end;
+
 begin
-  Len := 0;
   Result := '';
-  for i := 0 to fNames.Count - 1 do begin
+  iLonguest:=0;
+  iLenCurrent:=0;
+  for i := 0 to fNames.Count - 1 do
+  begin
     s := CreateDescription(FNames[i]);
-    Len := Length(s);
-    if Result <> '' then
-      Result := Result + #13#10;
+    iLenCurrent :=length(s);
+    if iLenCurrent>iLonguest then iLonguest:=iLenCurrent;
+    if Result <> '' then Result := Result + #13#10;
     Result := Result + s;
   end;
-  Result := Result + StringOfChar(' ', _Indent - Len - 3) + ' : ' + fDescription;
+  if iLonguest>length(s) then result:=result+StringOfChar(' ',(iLonguest-iLenCurrent));
+  result:=result+' : ';
+
+  sLineHeader := '';
+  iLastPosNewLine:=1;
+  repeat
+    iPosNewLine := posex('\n',FDescription,iLastPosNewLine);
+    if iPosNewLine=0 then
+    begin
+      AddChunkToResult(copy(FDescription, iLastPosNewLine));
+    end
+    else
+    begin
+      AddChunkToResult(copy(FDescription, iLastPosNewLine, iPosNewLine-iLastPosNewLine));
+      iLastPosNewLine:=succ(succ(iPosNewLine));
+     end;
+  until iPosNewLine=0;
 end;
 
 end.

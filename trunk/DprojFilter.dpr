@@ -46,7 +46,8 @@ uses
   u_dzTypes in 'dzlib\src\u_dzTypes.pas',
   u_dzVariantUtils in 'dzlib\src\u_dzVariantUtils.pas',
   RegExpr in 'RegExLib\RegExpr.pas',
-  uOutputUserMessage in 'uOutputUserMessage.pas';
+  uOutputUserMessage in 'uOutputUserMessage.pas',
+  u_DprojFilterOptionKeyWords in 'u_DprojFilterOptionKeyWords.pas';
 
 {$R *.res}
 

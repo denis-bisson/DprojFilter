@@ -1,4 +1,4 @@
-//********************************************************************************
+﻿//********************************************************************************
 //* DprojFilter                                                                  *
 //* -----------------------------------------------------------------------------*
 //* Command line parser and other utilities from dzlib                           *
@@ -104,7 +104,7 @@ type
   private
     function GetProgName: string;
     function GetExeName: string;
-    procedure ShowCmdLine;
+//    procedure ShowCmdLine;
     procedure doUsage(const _Error: string = '');
   protected
     ///<symmary>
@@ -249,9 +249,9 @@ begin
   end;
   Msg := s + Format(
     _('Synopsis: %s %s') + #13#10#13#10
-    + _('Parameters:') + #13#10
+    + _('Parameters') + #13#10
     + '%s'#13#10#13#10
-    + _('Options:') + #13#10
+    + _('Options') + #13#10
     + '%s'#13#10
     + '%s',
     [FGetOpt.ProgName, FGetOpt.GetCmdLineDesc, FGetOpt.GetParamHelp, FGetOpt.GetOptionHelp,
@@ -266,16 +266,16 @@ begin
   SysUtils.Abort;
 end;
 
-procedure TDefaultMain.ShowCmdLine;
-begin
-  doUsage('--ShowCmdLine was passed (no error)');
-end;
+//procedure TDefaultMain.ShowCmdLine;
+//begin
+//  doUsage('--ShowCmdLine was passed (no error)');
+//end;
 
 procedure TDefaultMain.InitCmdLineParser;
 begin
-  FGetOpt.RegisterHelpOptions;
-  FGetOpt.RegisterOption('StartupLog', _('Write a startup log to the given file.'), true);
-  FGetOpt.RegisterOption('ShowCmdLine', _('Show command line as passed to the program.'));
+//  FGetOpt.RegisterHelpOptions;
+//  FGetOpt.RegisterOption('StartupLog', _('Write a startup log to the given file.'), true);
+//  FGetOpt.RegisterOption('ShowCmdLine', _('Show command line as passed to the program.'));
 end;
 
 procedure TDefaultMain.ParseCmdLine;
@@ -286,10 +286,10 @@ begin
     on e: exception do
       Usage(e.Message);
   end;
-  if FGetOpt.HelpOptionFound then
-    Usage;
-  if FGetOpt.OptionPassed('ShowCmdLine') then
-    ShowCmdLine;
+//  if FGetOpt.HelpOptionFound then
+//    Usage;
+//  if FGetOpt.OptionPassed('ShowCmdLine') then
+//    ShowCmdLine;
 end;
 
 function TDefaultMain.Execute: integer;
