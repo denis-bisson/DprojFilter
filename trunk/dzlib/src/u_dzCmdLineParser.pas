@@ -1,4 +1,4 @@
-//********************************************************************************
+﻿//********************************************************************************
 //* DprojFilter                                                                  *
 //* -----------------------------------------------------------------------------*
 //* Command line parser and other utilities from dzlib                           *
@@ -69,7 +69,6 @@ uses
   SysUtils,
   Classes,
   u_dzTranslator;
-
 
 type
   EStateEngineError = class(exception);
@@ -186,7 +185,7 @@ type
     property Params: TStringList read FParams;
   end;
 
-{ TStateParams }
+  { TStateParams }
 
 procedure TEngineContext.AddToOption(_c: char);
 begin
@@ -218,7 +217,8 @@ function TEngineContext.GetNextChar: char;
 begin
   if FReadIdx >= Length(FInput) then
     Result := #0
-  else begin
+  else
+  begin
     Inc(FReadIdx);
     Result := FInput[FReadIdx];
   end;
@@ -281,10 +281,13 @@ begin
   s := Trim(_Commandline);
   Len := Length(s);
   NeedsClosingQuote := False;
-  for i := 1 to Len do begin
+  for i := 1 to Len do
+  begin
     case s[i] of
-      ' ': begin
-          if not NeedsClosingQuote then begin
+      ' ':
+        begin
+          if not NeedsClosingQuote then
+          begin
             _ProgName := Trim(LeftStr(s, i));
             _Parameters := Trim(TailStr(s, i + 1));
             exit;

@@ -1,4 +1,4 @@
-//********************************************************************************
+﻿//********************************************************************************
 //* DprojFilter                                                                  *
 //* -----------------------------------------------------------------------------*
 //* Command line parser and other utilities from dzlib                           *
@@ -320,20 +320,27 @@ begin
       varDispatch: Result := VarToStr(_v);
       varString: Result := VarToStr(_v);
     else
-      if (vt and varArray) = varArray then begin
-        if VarArrayDimCount(_v) = 1 then begin
-          for i := VarArrayLowBound(_v, 1) to VarArrayHighBound(_v, 1) do begin
+      if (vt and varArray) = varArray then
+      begin
+        if VarArrayDimCount(_v) = 1 then
+        begin
+          for i := VarArrayLowBound(_v, 1) to VarArrayHighBound(_v, 1) do
+          begin
             if Result <> '' then
               Result := Result + ' | ';
             Result := Result + DumpVariant(_v[i]);
           end;
-        end else if VarArrayDimCount(_v) = 2 then begin
+        end
+        else if VarArrayDimCount(_v) = 2 then
+        begin
           for i := VarArrayLowBound(_v, 1) to VarArrayHighBound(_v, 1) do
             for j := VarArrayLowBound(_v, 1) to VarArrayHighBound(_v, 1) do
               Result := Result + DumpVariant(_v[i, j]);
-        end else
+        end
+        else
           Result := '3dim-array not supported'; // do not translate
-      end else
+      end
+      else
         Result := '<Unknown Type>'; // do not translate
     end;
     Result := Result + ' (' + VarTypeAsText(VarType(_v)) + ')';
@@ -435,7 +442,8 @@ end;
 function TryVar2Bool(const _v: Variant; out _b: Boolean): Boolean;
 begin
   Result := not VarIsNull(_v) and not VarIsEmpty(_v);
-  if Result then begin
+  if Result then
+  begin
     try
       _b := _v;
     except
@@ -479,9 +487,12 @@ begin
     raise EVarIsNull.CreateFmt(_('Variant is Null, should be %s: %s'), [EXPECTED, _Source]);
   if VarIsEmpty(_v) then
     raise EVarIsEmpty.CreateFmt(_('Variant is Empty, should be %s: %s'), [EXPECTED, _Source]);
-  if VarIsStr(_v) then begin
+  if VarIsStr(_v) then
+  begin
     Result := Str2Date(_v);
-  end else begin
+  end
+  else
+  begin
     try
       Result := _v;
     except
@@ -492,7 +503,7 @@ begin
 end;
 
 function TryVar2DateTime(const _v: Variant; out _dt: TDateTime): Boolean;
-        // from Variants
+// from Variants
 
   function VarToDoubleCustom(const V: TVarData; out AValue: Double): Boolean;
   var
@@ -500,7 +511,8 @@ function TryVar2DateTime(const _v: Variant; out _dt: TDateTime): Boolean;
     LTemp: TVarData;
   begin
     Result := FindCustomVariantType(V.VType, LHandler);
-    if Result then begin
+    if Result then
+    begin
       VariantInit(LTemp);
       LHandler.CastTo(LTemp, V, varDouble);
       AValue := LTemp.VDouble;
@@ -515,7 +527,8 @@ begin
     _dt := VarToDateTime(_v)
   else if VarIsStr(_v) then
     Result := TryStr2Date(_v, _dt)
-  else begin
+  else
+  begin
     Result := VarToDoubleCustom(TVarData(_v), d);
     _dt := d;
   end;
@@ -561,9 +574,12 @@ begin
     raise EVarIsNull.CreateFmt(_('Variant is Null, should be %s: %s'), [EXPECTED, _Source]);
   if VarIsEmpty(_v) then
     raise EVarIsEmpty.CreateFmt(_('Variant is Empty, should be %s: %s'), [EXPECTED, _Source]);
-  if VarIsStr(_v) then begin
+  if VarIsStr(_v) then
+  begin
     Value := Str2Date(_v);
-  end else begin
+  end
+  else
+  begin
     try
       Value := _v;
     except

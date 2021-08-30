@@ -77,7 +77,7 @@ var
   dwWnd: DWORD; // Handle for the size call.
   FI: PVSFixedFileInfo; // Delphi structure; see WINDOWS.PAS
   ptrVerBuf: Pointer; // pointer to a version buffer
-  V1,V2,V3,V4:string;
+  V1, V2, V3, V4: string;
 begin
   V1 := '';
   V2 := '';
@@ -103,61 +103,58 @@ begin
           result := V1 + '.' + V2 + '.' + V3 + '.' + V4;
         end;
       end;
-
     finally
       freeMem(ptrVerBuf);
     end;
   end;
 end;
 
-
 { DprojFilter_LogUserMessage }
 procedure DprojFilter_LogUserMessage(const sMsgToShow: string; const iContext: tOUS_Context);
 var
-  sLineHeader:string;
-  iLastPosNewLine, iPosNewLine:integer;
-  bIsFirstLine:boolean;
+  sLineHeader: string;
+  iLastPosNewLine, iPosNewLine: integer;
+  bIsFirstLine: boolean;
 
-  procedure AddChunkToResult(sChunk:string);
+  procedure AddChunkToResult(sChunk: string);
   begin
-    WriteLn(sLineHeader+sChunk);
+    WriteLn(sLineHeader + sChunk);
     if bIsFirstLine then
     begin
-       sLineHeader:=StringOfChar(' ',length(sLineHeader));
-       bIsFirstLine:=False;
+      sLineHeader := StringOfChar(' ', length(sLineHeader));
+      bIsFirstLine := False;
     end;
   end;
 begin
   //We're building a plain console application.
   //We will ourput to console, both regular and error message to the same output.
   //For the error, we will add '>>> ' at the beginning of the line to attempt to attract the attention.
-  bIsFirstLine:=True;
+  bIsFirstLine := True;
 
   case iContext of
-    ouscINFORMATION: sLineHeader:='';
-    ouscERROR: sLineHeader:='>>> ';
+    ouscINFORMATION: sLineHeader := '';
+    ouscERROR: sLineHeader := '>>> ';
   end;
 
-  iLastPosNewLine:=1;
+  iLastPosNewLine := 1;
   repeat
-    iPosNewLine := posex(#$0D#$0A,sMsgToShow,iLastPosNewLine);
-    if iPosNewLine=0 then
+    iPosNewLine := posex(#$0D#$0A, sMsgToShow, iLastPosNewLine);
+    if iPosNewLine = 0 then
     begin
       AddChunkToResult(copy(sMsgToShow, iLastPosNewLine));
     end
     else
     begin
-      AddChunkToResult(copy(sMsgToShow, iLastPosNewLine, iPosNewLine-iLastPosNewLine));
-      iLastPosNewLine:=succ(succ(iPosNewLine));
-     end;
-  until iPosNewLine=0;
-
+      AddChunkToResult(copy(sMsgToShow, iLastPosNewLine, iPosNewLine - iLastPosNewLine));
+      iLastPosNewLine := succ(succ(iPosNewLine));
+    end;
+  until iPosNewLine = 0;
 end;
 
 { DprojFilter_DisplayAppInfo }
 procedure DprojFilter_DisplayAppInfo;
 begin
-  WriteUserMessage('DprojFilter ver '+DprojFilter_GetVersionName);
+  WriteUserMessage('DprojFilter ver ' + DprojFilter_GetVersionName);
   WriteUserMessage('--------------------------------------------------------------------------------');
   WriteUserMessage('Originally and mainly written by Thomas Mueller');
   WriteUserMessage('  https://osdn.net/projects/dprojfilter');

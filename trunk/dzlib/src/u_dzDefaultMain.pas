@@ -104,7 +104,7 @@ type
   private
     function GetProgName: string;
     function GetExeName: string;
-//    procedure ShowCmdLine;
+    //    procedure ShowCmdLine;
     procedure doUsage(const _Error: string = '');
   protected
     ///<symmary>
@@ -273,9 +273,9 @@ end;
 
 procedure TDefaultMain.InitCmdLineParser;
 begin
-//  FGetOpt.RegisterHelpOptions;
-//  FGetOpt.RegisterOption('StartupLog', _('Write a startup log to the given file.'), true);
-//  FGetOpt.RegisterOption('ShowCmdLine', _('Show command line as passed to the program.'));
+  //  FGetOpt.RegisterHelpOptions;
+  //  FGetOpt.RegisterOption('StartupLog', _('Write a startup log to the given file.'), true);
+  //  FGetOpt.RegisterOption('ShowCmdLine', _('Show command line as passed to the program.'));
 end;
 
 procedure TDefaultMain.ParseCmdLine;
@@ -286,10 +286,10 @@ begin
     on e: exception do
       Usage(e.Message);
   end;
-//  if FGetOpt.HelpOptionFound then
-//    Usage;
-//  if FGetOpt.OptionPassed('ShowCmdLine') then
-//    ShowCmdLine;
+  //  if FGetOpt.HelpOptionFound then
+  //    Usage;
+  //  if FGetOpt.OptionPassed('ShowCmdLine') then
+  //    ShowCmdLine;
 end;
 
 function TDefaultMain.Execute: integer;
@@ -310,8 +310,8 @@ begin
     end;
     on e: Exception do
     begin
-      s := 'Exception: '+ #$0D#$0A+e.Message;
-      if e.ClassName<>'Exception' then s:=s+#$0D#$0A+'('+e.ClassName+')';
+      s := 'Exception: ' + #$0D#$0A + e.Message;
+      if e.ClassName <> 'Exception' then s := s + #$0D#$0A + '(' + e.ClassName + ')';
       WriteUserMessage(s, ouscERROR);
       FExitCode := 1;
     end;

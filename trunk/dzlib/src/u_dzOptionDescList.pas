@@ -154,7 +154,8 @@ begin
   FPrimaryName := _Names[0];
   AssertValidOptionName(AnsiString(FPrimaryName));
   FNames := TStringList.Create;
-  for i := 0 to high(_Names) do begin
+  for i := 0 to high(_Names) do
+  begin
     s := _Names[i];
     AssertValidOptionName(AnsiString(s));
     fNames.Add(s);
@@ -185,12 +186,14 @@ function TOptionDesc.CreateDescription(const _OptionName: string): string;
 begin
   case Length(_OptionName) of
     0: Result := ''; // should never happen
-    1: begin
+    1:
+      begin
         Result := '-' + _OptionName;
         if FHasValue then
           Result := Result + ' ' + _('value');
       end;
-  else begin
+  else
+    begin
       Result := '--' + _OptionName;
       if FHasValue then
         Result := Result + '=' + _('value');
@@ -201,51 +204,51 @@ end;
 function TOptionDesc.GetDescription: string;
 var
   i: integer;
-  iLenCurrent, iLonguest,iLastPosNewLine,iPosNewLine: integer;
-  s,sLineHeader: string;
+  iLenCurrent, iLonguest, iLastPosNewLine, iPosNewLine: integer;
+  s, sLineHeader: string;
 
-  procedure AddChunkToResult(sChunk:string);
+  procedure AddChunkToResult(sChunk: string);
   begin
-    if sLineHeader='' then
+    if sLineHeader = '' then
     begin
-       sLineHeader := StringOfChar(' ',(iLonguest+3));
-       Result:=Result+sChunk;
+      sLineHeader := StringOfChar(' ', (iLonguest + 3));
+      Result := Result + sChunk;
     end
     else
     begin
-      Result:=Result+#$0D#$0A+sLineHeader+sChunk;
+      Result := Result + #$0D#$0A + sLineHeader + sChunk;
     end;
   end;
 
 begin
   Result := '';
-  iLonguest:=0;
-  iLenCurrent:=0;
+  iLonguest := 0;
+  iLenCurrent := 0;
   for i := 0 to fNames.Count - 1 do
   begin
     s := CreateDescription(FNames[i]);
-    iLenCurrent :=length(s);
-    if iLenCurrent>iLonguest then iLonguest:=iLenCurrent;
+    iLenCurrent := length(s);
+    if iLenCurrent > iLonguest then iLonguest := iLenCurrent;
     if Result <> '' then Result := Result + #13#10;
     Result := Result + s;
   end;
-  if iLonguest>length(s) then result:=result+StringOfChar(' ',(iLonguest-iLenCurrent));
-  result:=result+' : ';
+  if iLonguest > length(s) then result := result + StringOfChar(' ', (iLonguest - iLenCurrent));
+  result := result + ' : ';
 
   sLineHeader := '';
-  iLastPosNewLine:=1;
+  iLastPosNewLine := 1;
   repeat
-    iPosNewLine := posex('\n',FDescription,iLastPosNewLine);
-    if iPosNewLine=0 then
+    iPosNewLine := posex('\n', FDescription, iLastPosNewLine);
+    if iPosNewLine = 0 then
     begin
       AddChunkToResult(copy(FDescription, iLastPosNewLine));
     end
     else
     begin
-      AddChunkToResult(copy(FDescription, iLastPosNewLine, iPosNewLine-iLastPosNewLine));
-      iLastPosNewLine:=succ(succ(iPosNewLine));
-     end;
-  until iPosNewLine=0;
+      AddChunkToResult(copy(FDescription, iLastPosNewLine, iPosNewLine - iLastPosNewLine));
+      iLastPosNewLine := succ(succ(iPosNewLine));
+    end;
+  until iPosNewLine = 0;
 end;
 
 end.

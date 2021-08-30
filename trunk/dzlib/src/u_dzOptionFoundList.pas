@@ -1,4 +1,4 @@
-//********************************************************************************
+﻿//********************************************************************************
 //* DprojFilter                                                                  *
 //* -----------------------------------------------------------------------------*
 //* Command line parser and other utilities from dzlib                           *
@@ -88,10 +88,10 @@ type
   ///<summary> List for storing TOptionFound items sorted by String </summary>
   TOptionFoundList = class(_DZ_SORTED_OBJECT_LIST_TEMPLATE_)
   protected
-     ///<summary> return the key of an item for comparison </summary>
+    ///<summary> return the key of an item for comparison </summary>
     function KeyOf(const _Item: TOptionFound): string; override;
-     ///<summary> compare the keys of two items, must return a value
-     ///          < 0 if Key1 < Key2, = 0 if Key1 = Key2 and > 0 if Key1 > Key2 </summary>
+    ///<summary> compare the keys of two items, must return a value
+    ///          < 0 if Key1 < Key2, = 0 if Key1 = Key2 and > 0 if Key1 > Key2 </summary>
     function Compare(const _Key1, _Key2: string): integer; override;
   end;
 

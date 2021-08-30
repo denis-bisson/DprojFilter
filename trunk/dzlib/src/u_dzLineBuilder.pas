@@ -1,4 +1,4 @@
-//********************************************************************************
+﻿//********************************************************************************
 //* DprojFilter                                                                  *
 //* -----------------------------------------------------------------------------*
 //* Command line parser and other utilities from dzlib                           *
@@ -257,7 +257,8 @@ var
 begin
   p := Pos(FListSeparator, FContent);
   Result := p <> 0;
-  if Result then begin
+  if Result then
+  begin
     _Column := LeftStr(FContent, p - 1);
     FContent := Copy(FContent, p + 1);
     Dec(FColumnCount);
@@ -277,3 +278,4 @@ begin
 end;
 
 end.
+

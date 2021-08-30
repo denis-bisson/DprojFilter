@@ -26,41 +26,42 @@ uses
   System.Classes;
 
 var
-  slKeyWords:TStringList=nil;
-  KWD_ChangeFrom:integer=-1;
-  KWD_ChangeTo:integer=-1;
-  KWD_DeleteLine:integer=-1;
-  KWD_InsertAfter:integer=-1;
-  KWD_Insert:integer=-1;
-  KWD_InsertAfterAll:integer=-1;
-  KWD_InsertAfterAllowDuplicates:integer=-1;
-  KWD_GroupOptions:integer=-1;
-  KWD_RegExReplaceFrom:integer=-1;
-  KWD_RegExReplaceTo:integer=-1;
+  slKeyWords: TStringList = nil;
+  KWD_ChangeFrom: integer = -1;
+  KWD_ChangeTo: integer = -1;
+  KWD_DeleteLine: integer = -1;
+  KWD_InsertAfter: integer = -1;
+  KWD_Insert: integer = -1;
+  KWD_InsertAfterAll: integer = -1;
+  KWD_InsertAfterAllowDuplicates: integer = -1;
+  KWD_GroupOptions: integer = -1;
+  KWD_RegExReplaceFrom: integer = -1;
+  KWD_RegExReplaceTo: integer = -1;
 
 implementation
 
 initialization
   slKeyWords := TStringList.Create;
   slKeyWords.Add('ChangeFrom');
-  KWD_ChangeFrom:=0;
+  KWD_ChangeFrom := 0;
   slKeyWords.Add('ChangeTo');
-  KWD_ChangeTo:=1;
+  KWD_ChangeTo := 1;
   slKeyWords.Add('DeleteLine');
-  KWD_DeleteLine:=2;
+  KWD_DeleteLine := 2;
   slKeyWords.Add('InsertAfter');
-  KWD_InsertAfter:=3;
+  KWD_InsertAfter := 3;
   slKeyWords.Add('Insert');
-  KWD_Insert:=4;
+  KWD_Insert := 4;
   slKeyWords.Add('InsertAfterAll');
-  KWD_InsertAfterAll:=5;
+  KWD_InsertAfterAll := 5;
   slKeyWords.Add('InsertAfterAllowDuplicates');
-  KWD_InsertAfterAllowDuplicates:=6;
+  KWD_InsertAfterAllowDuplicates := 6;
   slKeyWords.Add('GroupOptions');
-  KWD_GroupOptions:=7;
+  KWD_GroupOptions := 7;
   slKeyWords.Add('RegExReplaceFrom');
-  KWD_RegExReplaceFrom:=8;
+  KWD_RegExReplaceFrom := 8;
   slKeyWords.Add('RegExReplaceTo');
-  KWD_RegExReplaceTo:=9;
+  KWD_RegExReplaceTo := 9;
 
 end.
+

@@ -1,4 +1,4 @@
-//********************************************************************************
+﻿//********************************************************************************
 //* DprojFilter                                                                  *
 //* -----------------------------------------------------------------------------*
 //* Command line parser and other utilities from dzlib                           *
@@ -313,10 +313,10 @@ type
   THandleCast = THandle;
 {$ELSE}
   THandleCast = Integer; // Delphi < XE wrongly declares the handle parameter
-                         // to THandleStream.Create as signed integer while
-                         // it really should be unsigned. Delphi XE corrects
-                         // this but in order to compile with all version we
-                         // need this cond. define.
+  // to THandleStream.Create as signed integer while
+  // it really should be unsigned. Delphi XE corrects
+  // this but in order to compile with all version we
+  // need this cond. define.
 {$ENDIF}
 
 class procedure TdzFile.CreateReadFree(const _fn: string; var _Buffer; _Size: Integer);
@@ -395,7 +395,8 @@ procedure TdzFile.Open;
 var
   LastError: Cardinal;
 begin
-  if not OpenNoException then begin
+  if not OpenNoException then
+  begin
     LastError := GetLastError;
     RaiseLastOSErrorEx(LastError, Format(_('%%1:s (%%0:d) trying to open "%s"'), [FFilename]));
   end;
@@ -471,9 +472,11 @@ var
   LastError: LongWord;
   ErrStrFmt: string;
 begin
-  if _Count <> 0 then begin
+  if _Count <> 0 then
+  begin
     Written := Write(_Buffer, _Count);
-    if (Written <> _Count) then begin
+    if (Written <> _Count) then
+    begin
       LastError := GetLastError;
       // Note: The %% for the first two parameters is not an error. These will automatically
       // be replaced with a single % by the format function.
@@ -502,3 +505,4 @@ begin
 end;
 
 end.
+

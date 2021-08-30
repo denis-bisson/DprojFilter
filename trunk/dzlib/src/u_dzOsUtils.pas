@@ -315,7 +315,8 @@ var
   State: TKeyboardState;
 begin
   Result := [];
-  if GetKeyboardState(State) then begin
+  if GetKeyboardState(State) then
+  begin
     if ((State[vk_Shift] and 128) <> 0) then
       Include(Result, ssShift);
     if ((State[VK_CONTROL] and 128) <> 0) then
@@ -340,7 +341,8 @@ begin
   SetLength(Result, BufSize + 1);
   if Windows.GetComputerName(@Result[1], BufSize) then
     SetLength(Result, BufSize)
-  else begin
+  else
+  begin
     if _RaiseException then
       RaiseLastOSError;
     Result := '';
@@ -353,9 +355,12 @@ var
 begin
   BufSize := MAX_BUFFER_SIZE;
   SetLength(Result, BufSize + 1);
-  if Windows.GetUserName(PChar(Result), BufSize) then begin
+  if Windows.GetUserName(PChar(Result), BufSize) then
+  begin
     SetLength(Result, BufSize - 1);
-  end else begin
+  end
+  else
+  begin
     if _RaiseException then
       RaiseLastOSError;
     Result := '';
@@ -382,7 +387,8 @@ begin
   SetLength(Result, BufSize + 1);
   if GetComputerNameExApi(DWORD(_NameFormat), PChar(Result), BufSize) then
     SetLength(Result, BufSize)
-  else begin
+  else
+  begin
     if _RaiseException then
       RaiseLastOSError;
     Result := '';
@@ -409,12 +415,16 @@ begin
     GetUserNameExApi := GetProcAddress(ModuleHandle, ENTRY_POINT_NAME);
     if not Assigned(GetUserNameExApi) then
       Result := 'username unknown'
-    else begin
+    else
+    begin
       Len := MAX_BUFFER_SIZE;
       SetLength(Result, Len);
-      if GetUserNameExApi(DWORD(_NameFormat), PChar(Result), Len) then begin
+      if GetUserNameExApi(DWORD(_NameFormat), PChar(Result), Len) then
+      begin
         SetLength(Result, Len);
-      end else begin
+      end
+      else
+      begin
         LastError := GetLastError;
         Result := Format('username unknown (%d)', [LastError]);
       end;
@@ -433,12 +443,14 @@ begin
   MaxLen := Length(_WithVariables) + 16 * 1024; // 16 KB should be enough for everybody... ;-)
   SetLength(Result, MaxLen);
   Res := Windows.ExpandEnvironmentStrings(PChar(_WithVariables), PChar(Result), MaxLen);
-  if Res > MaxLen then begin
+  if Res > MaxLen then
+  begin
     MaxLen := Res + 1;
     SetLength(Result, MaxLen);
     Res := Windows.ExpandEnvironmentStrings(PChar(_WithVariables), PChar(Result), MaxLen);
   end;
-  if Res = 0 then begin
+  if Res = 0 then
+  begin
     LastError := GetLastError;
     RaiseLastOSErrorEx(LastError, _('Error %1:s (%0:d) calling Windows.ExpandEnvironmentStrings'));
   end;
@@ -455,10 +467,12 @@ begin
   try
     _Vars.Clear;
     Vars := Windows.GetEnvironmentStrings;
-    if Vars <> nil then begin
+    if Vars <> nil then
+    begin
       try
         p := Vars;
-        while p^ <> #0 do begin
+        while p^ <> #0 do
+        begin
           _Vars.Add(p);
           p := StrEnd(p);
           Inc(p);
@@ -559,12 +573,14 @@ begin
     _Filename := GetModuleFilename;
   VerInfoSize := GetFileVersionInfoSize(PChar(_Filename), Dummy);
   Result := (VerInfoSize <> 0);
-  if Result then begin
+  if Result then
+  begin
     GetMem(VerInfo, VerInfoSize);
     try
       GetFileVersionInfo(PChar(_Filename), 0, VerInfoSize, VerInfo);
       VerQueryValue(VerInfo, '\', Pointer(VerValue), VerValueSize);
-      with VerValue^ do begin
+      with VerValue^ do
+      begin
         _Major := dwFileVersionMS shr 16;
         _Minor := dwFileVersionMS and $FFFF;
         _Revision := dwFileVersionLS shr 16;
@@ -589,12 +605,14 @@ begin
     _Filename := GetModuleFilename;
   VerInfoSize := GetFileVersionInfoSize(PChar(_Filename), Dummy);
   Result := (VerInfoSize <> 0);
-  if Result then begin
+  if Result then
+  begin
     GetMem(VerInfo, VerInfoSize);
     try
       GetFileVersionInfo(PChar(_Filename), 0, VerInfoSize, VerInfo);
       VerQueryValue(VerInfo, '\', Pointer(VerValue), VerValueSize);
-      with VerValue^ do begin
+      with VerValue^ do
+      begin
         _Major := dwProductVersionMS shr 16;
         _Minor := dwProductVersionMS and $FFFF;
         _Revision := dwProductVersionLS shr 16;
@@ -612,7 +630,8 @@ var
   Major, Minor, Revision, Build: Integer;
 begin
   Result := GetFileBuildInfo(_Filename, Major, Minor, Revision, Build);
-  if Result then begin
+  if Result then
+  begin
     _Major := Major;
     _Minor := Minor;
     _Revision := Revision;
@@ -680,21 +699,25 @@ var
 begin
   Result := False;
   bSuccess := OpenThreadToken(GetCurrentThread, TOKEN_QUERY, True, hAccessToken);
-  if not bSuccess then begin
+  if not bSuccess then
+  begin
     if GetLastError = ERROR_NO_TOKEN then
       bSuccess := OpenProcessToken(GetCurrentProcess, TOKEN_QUERY, hAccessToken);
   end;
-  if bSuccess then begin
+  if bSuccess then
+  begin
     try
       GetMem(ptgGroups, 1024);
       try
         bSuccess := GetTokenInformation(hAccessToken, TokenGroups, ptgGroups, 1024, dwInfoBufferSize);
-        if bSuccess then begin
+        if bSuccess then
+        begin
           AllocateAndInitializeSid(SECURITY_NT_AUTHORITY, 2, SECURITY_BUILTIN_DOMAIN_RID, DOMAIN_ALIAS_RID_ADMINS, 0, 0, 0, 0, 0, 0, psidAdministrators);
           try
 {$R-}
             for X := 0 to ptgGroups.GroupCount - 1 do
-              if EqualSid(psidAdministrators, ptgGroups.Groups[X].Sid) then begin
+              if EqualSid(psidAdministrators, ptgGroups.Groups[X].Sid) then
+              begin
                 Result := True;
                 Break;
               end;
@@ -759,12 +782,14 @@ begin
     AdministratorsGroup) then
     Exit; //=>
   try
-    if @CheckTokenMembership = nil then begin
+    if @CheckTokenMembership = nil then
+    begin
       Hdl := LoadLibrary(advapi32);
       if Hdl = 0 then
         Exit; //=>
       @CheckTokenMembership := GetProcAddress(Hdl, 'CheckTokenMembership');
-      if @CheckTokenMembership = nil then begin
+      if @CheckTokenMembership = nil then
+      begin
         FreeLibrary(Hdl);
         Exit; //=>
       end;
@@ -846,7 +871,8 @@ var
     Flag: DWORD;
 begin
   // if Windows NT/2000/XP or later, we first need to get the rights
-  if (Win32Platform = VER_PLATFORM_WIN32_NT) then begin
+  if (Win32Platform = VER_PLATFORM_WIN32_NT) then
+  begin
     Flag := EWX_POWEROFF;
     OpenProcessToken(GetCurrentProcess, TOKEN_ADJUST_PRIVILEGES, hToken);
     LookupPrivilegeValue(nil, 'SeShutdownPrivilege', tp.Privileges[0].Luid);
@@ -855,7 +881,8 @@ begin
     h := 0;
     AdjustTokenPrivileges(hToken, False, tp, 0, PTokenPrivileges(nil)^, h);
     CloseHandle(hToken);
-  end else
+  end
+  else
     Flag := EWX_SHUTDOWN; // Win 98 / ME
 
   if _Force then
@@ -877,9 +904,12 @@ begin
   try
     Res := GetVolumeInformation(PChar(_DriveChar + ':\'), Buf,
       SizeOf(Buf), nil, NotUsed, VolFlags, nil, 0);
-    if Res then begin
+    if Res then
+    begin
       Result := Buf;
-    end else begin
+    end
+    else
+    begin
       if _RaiseException then
         RaiseLastOSError
       else
@@ -891,3 +921,4 @@ begin
 end;
 
 end.
+

@@ -154,7 +154,7 @@ type
     ///          @returns the number of matching options found on the commandline, the
     ///                   value -1 has a special meaning: The option name is unknown
     ///                   to the parser. </summary>
-    procedure ParseAssumingJustOptions(const sJustOptions:string);
+    procedure ParseAssumingJustOptions(const sJustOptions: string);
 
     function OptionPassed(const _Name: string; _Values: TStrings): Integer; overload;
     function OptionPassed(const _Name: string; var _Value: string): Boolean; overload;
@@ -270,7 +270,8 @@ begin
     Result := _('[options]')
   else
     Result := '';
-  for i := 0 to FParamDescList.Count - 1 do begin
+  for i := 0 to FParamDescList.Count - 1 do
+  begin
     ParamDesc := FParamDescList[i];
     s := ParamDesc.GetCmdMask;
     if Result <> '' then
@@ -286,7 +287,8 @@ var
   OptionDesc: TOptionDesc;
 begin
   Result := '';
-  for i := 0 to FOptionDescList.Count - 1 do begin
+  for i := 0 to FOptionDescList.Count - 1 do
+  begin
     OptionDesc := FOptionDescList[i];
     if not OptionDesc.isHidden then
     begin
@@ -309,7 +311,8 @@ var
   ParamDesc: TParamDesc;
 begin
   Result := '';
-  for i := 0 to FParamDescList.Count - 1 do begin
+  for i := 0 to FParamDescList.Count - 1 do
+  begin
     ParamDesc := FParamDescList[i];
     if Result <> '' then
       Result := Result + #13#10;
@@ -345,9 +348,11 @@ begin
 
   Result := 0;
   PrimaryName := FOptionNameList[Idx].GetPrimaryName;
-  if FOptionsFoundList.Find(PrimaryName, Idx) then begin
+  if FOptionsFoundList.Find(PrimaryName, Idx) then
+  begin
     Option := FOptionsFoundList[Idx];
-    while Assigned(Option) and (Option.GetPrimaryName = PrimaryName) do begin
+    while Assigned(Option) and (Option.GetPrimaryName = PrimaryName) do
+    begin
       Inc(Result);
       if Assigned(_Values) then
         _Values.Add(Option.Value);
@@ -380,9 +385,11 @@ var
 begin
   { TODO -otwm : This should raise an exception if ParamName is not one of the registered parameters }
   Result := 0;
-  for i := 0 to FParamsFoundList.Count - 1 do begin
+  for i := 0 to FParamsFoundList.Count - 1 do
+  begin
     ParamFound := FParamsFoundList[i];
-    if SameText(ParamFound.ParamDesc.Name, _ParamName) then begin
+    if SameText(ParamFound.ParamDesc.Name, _ParamName) then
+    begin
       Inc(Result);
       if Assigned(_Values) then
         _Values.Add(ParamFound.Value);
@@ -417,13 +424,15 @@ var
 begin
   FoundIdx := 0;
   DescIdx := 0;
-  while FoundIdx < _Params.Count do begin
+  while FoundIdx < _Params.Count do
+  begin
     DesCount := FParamDescList.Count;
     if (DescIdx >= DesCount) then
       raise ETooManyParams.Create(_('There are too many parameters.'));
     pd := FParamDescList[DescIdx];
     cnt := 0;
-    while ((cnt < pd.MaxCount) or (pd.MaxCount = -1)) and (FoundIdx < _Params.Count) do begin
+    while ((cnt < pd.MaxCount) or (pd.MaxCount = -1)) and (FoundIdx < _Params.Count) do
+    begin
       s := _Params[FoundIdx];
       FParamsFoundList.Add(TParamFound.Create(pd, s));
       Inc(cnt);
@@ -433,7 +442,8 @@ begin
       raise ETooFewParams.CreateFmt(_('There are not enough %s parameters (min: %d)'), [pd.Name, pd.MinCount]);
     Inc(DescIdx);
   end;
-  while DescIdx < FParamDescList.Count do begin
+  while DescIdx < FParamDescList.Count do
+  begin
     pd := FParamDescList[DescIdx];
     if pd.MinCount > 0 then
       raise ETooFewParams.CreateFmt(_('There are not enough %s parameters (min: %d)'), [pd.Name, pd.MinCount]);
@@ -441,15 +451,19 @@ begin
   end;
 
   FoundIdx := 0;
-  while FoundIdx < _Options.Count do begin
+  while FoundIdx < _Options.Count do
+  begin
     if not FOptionNameList.Find(_Options.Names[FoundIdx], OptName) then
       raise EUnknownOption.CreateFmt(_('Option %s is unknown'), [_Options.Names[FoundIdx]]);
     s := _Options.ValueFromIndex[FoundIdx];
     OptDesc := OptName.OptionDesc;
-    if OptDesc.HasValue then begin
+    if OptDesc.HasValue then
+    begin
       if s = '' then
         raise EOptionValue.CreateFmt(_('Option %s requires a value.'), [OptName.Name])
-    end else begin
+    end
+    else
+    begin
       if s <> '' then
         raise EOptionValue.CreateFmt(_('Option %s does not accept a value.'), [OptName.Name])
     end;
@@ -483,7 +497,8 @@ begin
     // delete the first "parameter", it is the executable name
     Params.Delete(0);
 
-    if FDequoteParams then begin
+    if FDequoteParams then
+    begin
       for i := 0 to Params.Count - 1 do
         Params[i] := AnsiDequotedStr(Params[i], '"');
     end;
@@ -513,12 +528,12 @@ begin
   end;
 end;
 
-procedure TGetOpt.ParseAssumingJustOptions(const sJustOptions:string);
+procedure TGetOpt.ParseAssumingJustOptions(const sJustOptions: string);
 var
   Options: TStringList;
   Params: TStringList;
 begin
-  FCmdLine := Format('"dummy.exe" %s',[sJustOptions]);
+  FCmdLine := Format('"dummy.exe" %s', [sJustOptions]);
   Options := TStringList.Create;
   Params := TStringList.Create;
   try
@@ -529,7 +544,6 @@ begin
     FreeAndNil(Options);
   end;
 end;
-
 
 procedure TGetOpt.RegisterHelpOptions;
 begin
@@ -569,3 +583,4 @@ begin
 end;
 
 end.
+

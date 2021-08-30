@@ -1,4 +1,4 @@
-//********************************************************************************
+﻿//********************************************************************************
 //* DprojFilter                                                                  *
 //* -----------------------------------------------------------------------------*
 //* Command line parser and other utilities from dzlib                           *
@@ -220,18 +220,18 @@ type
     class function FromHours(_Value: Extended): TdzDuration; static;
     class function FromMinutes(_Value: Extended): TdzDuration; static;
     class function FromSeconds(_Value: Extended): TdzDuration; static;
-//    class operator GreaterThan(_a, _b: TdzDuration): boolean; inline;
-//    class operator GreaterThanOrEqual(_a, _b: TdzDuration): boolean; inline;
-//    class operator LessThanOrEqual(const _a, _b: TdzDuration): boolean; inline;
+    //    class operator GreaterThan(_a, _b: TdzDuration): boolean; inline;
+    //    class operator GreaterThanOrEqual(_a, _b: TdzDuration): boolean; inline;
+    //    class operator LessThanOrEqual(const _a, _b: TdzDuration): boolean; inline;
     class operator LessThan(_a, _b: TdzDuration): Boolean; inline;
     class operator NotEqual(_a, _b: TdzDuration): Boolean; inline;
     class operator Equal(_a, _b: TdzDuration): Boolean; inline;
     class operator Add(_a, _b: TdzDuration): TdzDuration; inline;
     class operator Subtract(_a, _b: TdzDuration): TdzDuration; inline;
-//    class operator Divide(_a, _b: TdzDuration): extended; inline;
-//    class operator Divide(_a: TdzDuration; _Divisor: extended): TdzDuration; inline;
-//    class operator Multiply(_a: TdzDuration; _Factor: Extended): TdzDuration; inline;
-//    class operator Negative(_a: TdzDuration): TdzDuration; inline;
+    //    class operator Divide(_a, _b: TdzDuration): extended; inline;
+    //    class operator Divide(_a: TdzDuration; _Divisor: extended): TdzDuration; inline;
+    //    class operator Multiply(_a: TdzDuration; _Factor: Extended): TdzDuration; inline;
+    //    class operator Negative(_a: TdzDuration): TdzDuration; inline;
   end;
 
 implementation
@@ -336,7 +336,8 @@ begin
   if _Separator <> #0 then
     Settings.TimeSeparator := _Separator;
   fmt := 'hh:nn'; // do not translate
-  if _IncludeSeconds then begin
+  if _IncludeSeconds then
+  begin
     fmt := fmt + ':ss';
     if _IncludeMilliSeconds then
       fmt := fmt + '.zzz'; // do not translate
@@ -351,21 +352,29 @@ var
   mm: Integer;
 begin
   Len := Length(_s);
-  if _Separator = #0 then begin
+  if _Separator = #0 then
+  begin
     Result := TryStrToInt(LeftStr(_s, Len - 2), hh);
     if Result then
       Result := TryStrToInt(TailStr(_s, Len - 2), mm);
-  end else begin
+  end
+  else
+  begin
     Result := Len > 1;
-    if Result then begin
-      if Copy(_s, Len - 2, 1) = _Separator then begin
+    if Result then
+    begin
+      if Copy(_s, Len - 2, 1) = _Separator then
+      begin
         Result := TryStrToInt(LeftStr(_s, Len - 3), hh);
         if Result then
           Result := TryStrToInt(TailStr(_s, Len - 1), mm);
-      end else if Copy(_s, Len, 1) = _Separator then begin
+      end
+      else if Copy(_s, Len, 1) = _Separator then
+      begin
         Result := TryStrToInt(LeftStr(_s, Len - 1), hh);
         mm := 0;
-      end else
+      end
+      else
         Result := False;
     end;
   end;
@@ -404,7 +413,8 @@ begin
   Settings.DateSeparator := '-';
   Settings.ShortDateFormat := 'yyyy-mm-dd'; // do not translate
   Result := TryStrToDate(_s, _Date, Settings);
-  if not Result then begin
+  if not Result then
+  begin
     // Delphi does not support the "basic" ISO 8601 format: yyyymmdd without dashes, so we implement
     // it here
     if not (Length(_s) = 8) or not u_dzStringUtils.ContainsOnlyCharsFrom(_s, ['0'..'9']) then
@@ -468,13 +478,14 @@ begin
     // German dd.mm.yyyy
     if not Tryddmmyyyyhhmmss2DateTime(_s, _DateTime) then
       // ISO yyyy-mm-dd
-      if not TryIso2DateTime(_s, _DateTime) then begin
-//        // United Kingdom: dd/mm/yyyy
-//        UKSettings := GetUserDefaultLocaleSettings;
-//        UKSettings.DateSeparator := '/';
-//        UKSettings.ShortDateFormat := 'dd/mm/yyyy';
-//        if not TryStrToDate(_s, _dt, UKSettings) then
-          // nothing worked, give up
+      if not TryIso2DateTime(_s, _DateTime) then
+      begin
+        //        // United Kingdom: dd/mm/yyyy
+        //        UKSettings := GetUserDefaultLocaleSettings;
+        //        UKSettings.DateSeparator := '/';
+        //        UKSettings.ShortDateFormat := 'dd/mm/yyyy';
+        //        if not TryStrToDate(_s, _dt, UKSettings) then
+                  // nothing worked, give up
         Result := False;
       end;
 end;
@@ -490,7 +501,8 @@ begin
     // German dd.mm.yyyy
     if not Tryddmmyyyy2Date(_s, _dt) then
       // ISO yyyy-mm-dd
-      if not TryIso2Date(_s, _dt) then begin
+      if not TryIso2Date(_s, _dt) then
+      begin
         // United Kingdom: dd/mm/yyyy
         UKSettings := GetUserDefaultLocaleSettings;
         UKSettings.DateSeparator := '/';
@@ -665,3 +677,4 @@ begin
 end;
 
 end.
+

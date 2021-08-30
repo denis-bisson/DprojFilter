@@ -1,4 +1,4 @@
-//********************************************************************************
+﻿//********************************************************************************
 //* DprojFilter                                                                  *
 //* -----------------------------------------------------------------------------*
 //* Command line parser and other utilities from dzlib                           *
@@ -541,10 +541,12 @@ var
 begin
   Result := False;
   _Value := 0;
-  for i := 1 to Length(_s) do begin
+  for i := 1 to Length(_s) do
+  begin
     if isDigit(_s[i], _Base) then
       _Value := (_Value * _Base + ULong(Pos(UpCase(_s[i]), DIGIT_CHARS)) - 1)
-    else begin
+    else
+    begin
       Exit;
     end;
   end;
@@ -556,7 +558,8 @@ var
   m: Byte;
 begin
   Result := '';
-  while _l > 0 do begin
+  while _l > 0 do
+  begin
     m := _l mod _Base;
     _l := _l div _Base;
     Result := DIGIT_CHARS[m + 1] + Result;
@@ -674,10 +677,12 @@ end;
 
 function SecondsToTimeStr(_Seconds: Integer): string;
 begin
-  if _Seconds < 0 then begin
+  if _Seconds < 0 then
+  begin
     Result := '-';
     _Seconds := -_Seconds;
-  end else
+  end
+  else
     Result := '';
   Result := Result + Format('%.2d:%.2d:%.2d', [_Seconds div 3600, (_Seconds div 60) mod 60, _Seconds mod 60]);
 end;
@@ -695,14 +700,16 @@ var
   Sign: Integer;
 begin
   Len := Length(_Zeit);
-  if Len = 0 then begin
+  if Len = 0 then
+  begin
     Result := 0;
     Exit;
   end;
 
   Sign := 1;
   case _Zeit[1] of
-    '-': begin
+    '-':
+      begin
         Zeit := TailStr(_Zeit, 2);
         Sign := -1;
       end;
@@ -830,13 +837,16 @@ begin
   //  DotCnt := 0;
   CommaCnt := 0;
   Result := '.';
-  for i := 1 to Length(_s) do begin
+  for i := 1 to Length(_s) do
+  begin
     case _s[i] of
-      '.': begin
-            //            Inc(DotCnt);
+      '.':
+        begin
+          //            Inc(DotCnt);
           Result := '.';
         end;
-      ',': begin
+      ',':
+        begin
           Inc(CommaCnt);
           Result := ',';
         end;
@@ -937,12 +947,15 @@ end;
 function LongWord2ByteArr(_Value: LongWord; _MsbFirst: Boolean = False): TBytes;
 begin
   SetLength(Result, SizeOf(_Value));
-  if _MsbFirst then begin
+  if _MsbFirst then
+  begin
     Result[0] := _Value shr 24 and $FF;
     Result[1] := _Value shr 16 and $FF;
     Result[2] := _Value shr 8 and $FF;
     Result[3] := _Value shr 0 and $FF;
-  end else begin
+  end
+  else
+  begin
     Result[3] := _Value shr 24 and $FF;
     Result[2] := _Value shr 16 and $FF;
     Result[1] := _Value shr 8 and $FF;
@@ -954,9 +967,12 @@ function ByteArr2LongWord(const _Arr: array of Byte; _MsbFirst: Boolean = False)
 begin
   if Length(_Arr) <> SizeOf(Result) then
     raise Exception.CreateFmt(_('Length of byte array (%d) does not match size of a LongWord (%d)'), [Length(_Arr), SizeOf(Result)]);
-  if _MsbFirst then begin
+  if _MsbFirst then
+  begin
     Result := _Arr[0] shl 24 + _Arr[1] shl 16 + _Arr[2] shl 8 + _Arr[3];
-  end else begin
+  end
+  else
+  begin
     Result := _Arr[3] shl 24 + _Arr[2] shl 16 + _Arr[1] shl 8 + _Arr[0];
   end;
 end;
@@ -1019,7 +1035,8 @@ var
   i: TBitNumber32;
 begin
   Result := 0;
-  for i := _BitLast downto _BitFirst do begin
+  for i := _BitLast downto _BitFirst do
+  begin
     Result := Result shl 1;
     if IsBitSet(i) then
       Result := Result + 1;
@@ -1030,7 +1047,8 @@ procedure TBits32.Overwrite(_BitFirst, _BitLast: TBitNumber32; _Value: LongWord)
 var
   i: TBitNumber32;
 begin
-  for i := _BitFirst to _BitLast do begin
+  for i := _BitFirst to _BitLast do
+  begin
     SetBit(i, (_Value and $00000001) <> 0);
     _Value := _Value shr 1;
   end;
@@ -1209,3 +1227,4 @@ initialization
   Assert(AssertSwap32);
   Assert(AssertBitReverse32);
 end.
+

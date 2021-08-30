@@ -1,4 +1,4 @@
-//********************************************************************************
+﻿//********************************************************************************
 //* DprojFilter                                                                  *
 //* -----------------------------------------------------------------------------*
 //* Command line parser and other utilities from dzlib                           *
@@ -229,7 +229,8 @@ begin
   case c of
     #0:
       Result := nil; // end state
-    '"': begin
+    '"':
+      begin
         _Context.AddToParameter(c);
         Result := TEngineStateQuotedExe.Create;
       end;
@@ -253,7 +254,8 @@ begin
       Result := TEngineStateDash.Create;
     #0:
       Result := nil; // end state
-    '"': begin
+    '"':
+      begin
         _Context.AddToParameter(c);
         Result := TEngineStateQuotedParam.Create;
       end;
@@ -277,7 +279,8 @@ begin
   case c of
     #0:
       Result := nil; // end state
-    '"': begin
+    '"':
+      begin
         _Context.AddToParameter(c);
         Result := TEngineStateQuotedParam.Create;
       end;
@@ -297,11 +300,13 @@ var
 begin
   c := _Context.GetNextChar;
   case c of
-    '"': begin
+    '"':
+      begin
         _Context.AddToParameter(c);
         Result := TEngineStateQuotedExe.Create;
       end;
-    #0, ' ': begin
+    #0, ' ':
+      begin
         _Context.HandleCmdLinePart;
         Result := TEngineStateSpace.Create;
       end;
@@ -319,7 +324,8 @@ var
 begin
   c := _Context.GetNextChar;
   case c of
-    '"': begin
+    '"':
+      begin
         _Context.AddToParameter(c);
         Result := TEngineStateExe.Create;
       end;
@@ -339,11 +345,13 @@ var
 begin
   c := _Context.GetNextChar;
   case c of
-    '"': begin
+    '"':
+      begin
         _Context.AddToParameter(c);
         Result := TEngineStateQuotedParam.Create;
       end;
-    #0, ' ': begin
+    #0, ' ':
+      begin
         _Context.HandleCmdLinePart;
         Result := TEngineStateSpaceNoOptions.Create;
       end;
@@ -361,7 +369,8 @@ var
 begin
   c := _Context.GetNextChar;
   case c of
-    '"': begin
+    '"':
+      begin
         _Context.AddToParameter(c);
         Result := TEngineStateParam.Create;
       end;
@@ -380,10 +389,12 @@ var
   c: Char;
 begin
   c := _Context.GetNextChar;
-  if CharInSet(c, ALPHANUMERIC_CHARS + ['?']) then begin
+  if CharInSet(c, ALPHANUMERIC_CHARS + ['?']) then
+  begin
     _Context.AddToOption(c);
     Result := TEngineStateShortOption.Create;
-  end else if c = '-' then
+  end
+  else if c = '-' then
     Result := TEngineStateDoubleDash.Create
   else
     Result := TEngineStateError.Create(Format(_('Invalid character "%s".'), [c]));
@@ -396,10 +407,12 @@ var
   c: Char;
 begin
   c := _Context.GetNextChar;
-  if CharInSet(c, ALPHANUMERIC_CHARS) then begin
+  if CharInSet(c, ALPHANUMERIC_CHARS) then
+  begin
     _Context.AddToOption(c);
     Result := TEngineStateLongOption.Create;
-  end else
+  end
+  else
     Result := TEngineStateError.Create(Format(_('Invalid character "%s".'), [c]));
 end;
 
@@ -411,14 +424,17 @@ var
 begin
   c := _Context.GetNextChar;
   case c of
-    ' ': begin
+    ' ':
+      begin
         Result := TEngineStateShortParam.Create;
       end;
-    '-', '+': begin
+    '-', '+':
+      begin
         _Context.AddToParameter(c);
         Result := TEngineStateShortSwitch.Create;
       end;
-    #0: begin
+    #0:
+      begin
         _Context.HandleCmdLinePart;
         Result := TEngineStateSpace.Create;
       end;
@@ -435,10 +451,12 @@ var
 begin
   c := _Context.GetNextChar;
   case c of
-    ' ', #0: begin
+    ' ', #0:
+      begin
         _Context.HandleCmdLinePart;
         Result := TEngineStateSpace.Create;
-      end else
+      end
+  else
     Result := TEngineStateError.Create(Format(_('Invalid character "%s".'), [c]));
   end;
 end;
@@ -451,15 +469,18 @@ var
 begin
   c := _Context.GetNextChar;
   case c of
-    ' ', #0: begin
+    ' ', #0:
+      begin
         _Context.HandleCmdLinePart;
         Result := TEngineStateSpaceNoOptions.Create;
       end;
-    '"': begin
+    '"':
+      begin
         _Context.AddToParameter(c);
         Result := TEngineStateQuotedShortParam.Create;
       end;
-    '-': begin
+    '-':
+      begin
         _Context.HandleCmdLinePart;
         Result := TEngineStateDash.Create;
       end;
@@ -477,7 +498,8 @@ var
 begin
   c := _Context.GetNextChar;
   case c of
-    '"': begin
+    '"':
+      begin
         _Context.AddToParameter(c);
         Result := TEngineStateShortParam.Create;
       end;
@@ -499,7 +521,8 @@ begin
   case c of
     '=':
       Result := TEngineStateLongParam.Create;
-    ' ', #0: begin
+    ' ', #0:
+      begin
         _Context.HandleCmdLinePart;
         Result := TEngineStateSpace.Create;
       end;
@@ -519,11 +542,13 @@ var
 begin
   c := _Context.GetNextChar;
   case c of
-    '"': begin
+    '"':
+      begin
         _Context.AddToParameter(c);
         Result := TEngineStateQuotedLongParam.Create;
       end;
-    ' ', #0: begin
+    ' ', #0:
+      begin
         _Context.HandleCmdLinePart;
         Result := TEngineStateSpace.Create;
       end;
@@ -541,7 +566,8 @@ var
 begin
   c := _Context.GetNextChar;
   case c of
-    '"': begin
+    '"':
+      begin
         _Context.AddToParameter(c);
         Result := TEngineStateLongParam.Create;
       end;

@@ -1,4 +1,4 @@
-//********************************************************************************
+﻿//********************************************************************************
 //* DprojFilter                                                                  *
 //* -----------------------------------------------------------------------------*
 //* Command line parser and other utilities from dzlib                           *
@@ -400,7 +400,8 @@ begin
       _Error := Format(_Format, [Result, s])
     except
       _Error := s;
-    end else
+    end
+  else
     _Error := s;
 end;
 
@@ -422,7 +423,8 @@ var
   i: Integer;
   MaskFound: Boolean;
 begin
-  if _Wildcard = '' then begin
+  if _Wildcard = '' then
+  begin
     _Path := '.';
     _Mask := '';
     Result := True;
@@ -430,18 +432,23 @@ begin
   end;
   MaskFound := False;
   i := Length(_Wildcard);
-  while i > 0 do begin
+  while i > 0 do
+  begin
     if CharInSet(_Wildcard[i], ['*', '?']) then
       MaskFound := True;
-    if _Wildcard[i] = '\' then begin
-      if MaskFound or not TFileSystem.DirExists(_Wildcard) then begin
+    if _Wildcard[i] = '\' then
+    begin
+      if MaskFound or not TFileSystem.DirExists(_Wildcard) then
+      begin
         // if we had a mask, this is easy, just split the wildcard at position i
         // if there was no mask, and the whole thing is not a directory,
         // split at position i
         _Mask := TailStr(_Wildcard, i + 1);
         _Path := LeftStr(_Wildcard, i - 1);
         Result := TFileSystem.DirExists(_Path);
-      end else begin
+      end
+      else
+      begin
         // there was no mask and the whole thing is a directory
         Result := True;
         _Path := _Wildcard;
@@ -457,11 +464,14 @@ begin
 
   // if there was a mask, or the thing is not a directory, it is a file in
   // the current directory
-  if MaskFound or not TFileSystem.DirExists(_Wildcard) then begin
+  if MaskFound or not TFileSystem.DirExists(_Wildcard) then
+  begin
     _Path := '.';
     _Mask := _Wildcard;
     Result := True;
-  end else begin
+  end
+  else
+  begin
     // otherwise it is a subdirectory
     _Path := _Wildcard;
     _Mask := '';
@@ -506,7 +516,8 @@ var
   i: Integer;
 begin
   Result := '';
-  for i := 1 to Length(_s) do begin
+  for i := 1 to Length(_s) do
+  begin
     if Result <> '' then
       Result := Result + ' ';
     Result := Result + Long2Hex2(Ord(_s[i]));
@@ -522,7 +533,8 @@ var
 begin
   p := @_Buffer;
   Result := '';
-  for i := 0 to _Len - 1 do begin //FI:W528 - variable is only used for counting
+  for i := 0 to _Len - 1 do
+  begin //FI:W528 - variable is only used for counting
     Result := Result + Long2Hex2(p^);
     Inc(p);
   end;
@@ -548,7 +560,8 @@ var
 begin
   Assert(Length(_s) = SizeOf(_Value) * 2);
   p := @_Value;
-  for i := 0 to SizeOf(_Value) - 1 do begin
+  for i := 0 to SizeOf(_Value) - 1 do
+  begin
     Dec := Hex2Long(Copy(_s, i * 2 + 1, 2));
     p^[i] := Dec;
   end;
@@ -564,7 +577,8 @@ var
 begin
   Assert(Length(_s) = SizeOf(_Value) * 2);
   p := @_Value;
-  for i := 0 to SizeOf(_Value) - 1 do begin
+  for i := 0 to SizeOf(_Value) - 1 do
+  begin
     Dec := Hex2Long(Copy(_s, i * 2 + 1, 2));
     p^[i] := Dec;
   end;
@@ -591,10 +605,12 @@ function GetStringRefCount(_s: Pointer): Integer;
 var
   desc: PStringDescriptor;
 begin
-  if _s <> nil then begin
+  if _s <> nil then
+  begin
     desc := Pointer(Integer(_s) - 8);
     Result := desc.RefCount;
-  end else
+  end
+  else
     Result := 0;
 end;
 
@@ -905,3 +921,4 @@ begin
 end;
 
 end.
+

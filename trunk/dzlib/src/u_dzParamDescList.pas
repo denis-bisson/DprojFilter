@@ -116,19 +116,19 @@ end;
 
 function TParamDesc.GetDescription: string;
 var
-  iLastPosNewLine,iPosNewLine:integer;
-  sLineHeader:string;
+  iLastPosNewLine, iPosNewLine: integer;
+  sLineHeader: string;
 
-  procedure AddChunkToResult(sChunk:string);
+  procedure AddChunkToResult(sChunk: string);
   begin
-    if sLineHeader='' then
+    if sLineHeader = '' then
     begin
-       sLineHeader := StringOfChar(' ',length(Result));
-       Result:=Result+sChunk;
+      sLineHeader := StringOfChar(' ', length(Result));
+      Result := Result + sChunk;
     end
     else
     begin
-      Result:=Result+#$0D#$0A+sLineHeader+sChunk;
+      Result := Result + #$0D#$0A + sLineHeader + sChunk;
     end;
   end;
 
@@ -138,17 +138,18 @@ begin
   iLastPosNewLine := 1;
 
   repeat
-    iPosNewLine := posex('\n',FDescription,iLastPosNewLine);
-    if iPosNewLine=0 then
+    iPosNewLine := posex('\n', FDescription, iLastPosNewLine);
+    if iPosNewLine = 0 then
     begin
       AddChunkToResult(copy(FDescription, iLastPosNewLine));
     end
     else
     begin
-      AddChunkToResult(copy(FDescription, iLastPosNewLine, iPosNewLine-iLastPosNewLine));
-      iLastPosNewLine:=succ(succ(iPosNewLine));
-     end;
-  until iPosNewLine=0;
+      AddChunkToResult(copy(FDescription, iLastPosNewLine, iPosNewLine - iLastPosNewLine));
+      iLastPosNewLine := succ(succ(iPosNewLine));
+    end;
+  until iPosNewLine = 0;
 end;
 
 end.
+

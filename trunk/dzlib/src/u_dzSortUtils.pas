@@ -1,4 +1,4 @@
-//********************************************************************************
+﻿//********************************************************************************
 //* DprojFilter                                                                  *
 //* -----------------------------------------------------------------------------*
 //* Command line parser and other utilities from dzlib                           *
@@ -83,8 +83,8 @@ type
     ///          <0 if Item[Idx1] < Item[Idx2]
     ///          >0 if Item[Idx1] > Item[Idx2] </summary>
     function Compare(_Idx1, _Idx2: Integer): Integer;
-  ///<summary>
-  /// Swap the items at the given indexes </summary>
+    ///<summary>
+    /// Swap the items at the given indexes </summary>
     procedure Swap(_Idx1, _Idx2: Integer);
   end;
 
@@ -94,3 +94,4 @@ type
 implementation
 
 end.
+

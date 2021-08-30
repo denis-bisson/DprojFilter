@@ -1,4 +1,4 @@
-//********************************************************************************
+﻿//********************************************************************************
 //* DprojFilter                                                                  *
 //* -----------------------------------------------------------------------------*
 //* Command line parser and other utilities from dzlib                           *
@@ -131,7 +131,8 @@ begin
         Inc(I);
       while _DataHandler.Compare(J, P) > 0 do
         Dec(J);
-      if I <= J then begin
+      if I <= J then
+      begin
         if I < J then
           _DataHandler.Swap(I, J);
         if P = I then
@@ -164,7 +165,8 @@ begin
         Inc(I);
       while _CompareMeth(J, P) > 0 do
         Dec(J);
-      if I <= J then begin
+      if I <= J then
+      begin
         if I < J then
           _SwapMeth(I, J);
         if P = I then
@@ -188,14 +190,17 @@ var
   p, c: LongInt;
 begin
   Result := False;
-  while _Left <= _Right do begin
+  while _Left <= _Right do
+  begin
     p := (_Left + _Right) shr 1;
     c := _CompareMeth(_Key, p);
     if c > 0 then
       _Left := p + 1
-    else begin
+    else
+    begin
       _Right := p - 1;
-      if c = 0 then begin
+      if c = 0 then
+      begin
         Result := True;
         if not _Duplicates then
           _Left := p;
@@ -212,14 +217,17 @@ var
   p, c: LongInt;
 begin
   Result := False;
-  while _Left <= _Right do begin
+  while _Left <= _Right do
+  begin
     p := (_Left + _Right) shr 1;
     c := _CompareMeth(_Key, p);
     if c > 0 then
       _Left := p + 1
-    else begin
+    else
+    begin
       _Right := p - 1;
-      if c = 0 then begin
+      if c = 0 then
+      begin
         Result := True;
         if not _Duplicates then
           _Left := p;
@@ -235,14 +243,17 @@ var
   p, c: LongInt;
 begin
   Result := False;
-  while _Left <= _Right do begin
+  while _Left <= _Right do
+  begin
     p := (_Left + _Right) shr 1;
     c := _CompareInt.CompareTo(p);
     if c > 0 then
       _Left := p + 1
-    else begin
+    else
+    begin
       _Right := p - 1;
-      if c = 0 then begin
+      if c = 0 then
+      begin
         Result := True;
         if not _Duplicates then
           _Left := p;

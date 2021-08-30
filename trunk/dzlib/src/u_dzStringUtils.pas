@@ -77,13 +77,13 @@ uses
   u_dzLineBuilder;
 
 type
-///<summary> Ancestor of all exceptions raised in u_dzStringUtils </summary>
+  ///<summary> Ancestor of all exceptions raised in u_dzStringUtils </summary>
   EStringfunc = class(EdzException);
-///<summary> Raised by NthWord if the word index is out of range (1..word count) </summary>
+  ///<summary> Raised by NthWord if the word index is out of range (1..word count) </summary>
   EWordIndexOutOfRange = class(EStringfunc);
-///<summary> Raised by CenterStr if the given string ist too long. </summary>
+  ///<summary> Raised by CenterStr if the given string ist too long. </summary>
   EStringTooLong = class(EStringfunc);
-///<summary> Raised by NthCharOf if passed a char index of 0. </summary>
+  ///<summary> Raised by NthCharOf if passed a char index of 0. </summary>
   ECharIndexOutOfRange = class(EStringfunc);
 
 type
@@ -192,14 +192,14 @@ function LTrimSpaces(const _s: string): string;
 type
   TTrimStr = function(const _s: string): string;
 const
-///<summary>
-/// Function is deprcated, use RTrimSpaces instead, or possibily SysUtils.TrimRight </summary>
+  ///<summary>
+  /// Function is deprcated, use RTrimSpaces instead, or possibily SysUtils.TrimRight </summary>
   RTrimStr: TTrimStr = RTrimSpaces deprecated;
-///<summary>
-/// Function is deprcated, use LTrimSpaces instead, or possibly SysUtils.TrimLeft </summary>
+  ///<summary>
+  /// Function is deprcated, use LTrimSpaces instead, or possibly SysUtils.TrimLeft </summary>
   LTrimStr: TTrimStr = LTrimSpaces deprecated;
-///<summary>
-/// Function is deprcated, use TrimSpaces instead, or possibly SysUtils.Trim </summary>
+  ///<summary>
+  /// Function is deprcated, use TrimSpaces instead, or possibly SysUtils.Trim </summary>
   TrimStr: TTrimStr = TrimSpaces deprecated;
 
 ///<summary>
@@ -524,7 +524,8 @@ begin
   _Start := 0;
   _Ende := 0;
   i := 1;
-  while i <= Length(_s) do begin
+  while i <= Length(_s) do
+  begin
     while (i <= Length(_s)) and CharInSet(nthCharOf(_s, i), _Delimiter) do
       Inc(i);
     Dec(_WordNo);
@@ -532,7 +533,8 @@ begin
       _Start := i;
     while (i <= Length(_s)) and not CharInSet(nthCharOf(_s, i), _Delimiter) do
       Inc(i);
-    if _WordNo = 0 then begin
+    if _WordNo = 0 then
+    begin
       _Ende := i;
       Break;
     end;
@@ -583,7 +585,8 @@ end;
 
 function ExtractFirstWord(var _s: string; _Delimiter: TCharSet): string;
 begin
-  if not ExtractFirstWord(_s, _Delimiter, Result) then begin // s contained only Delimiters
+  if not ExtractFirstWord(_s, _Delimiter, Result) then
+  begin // s contained only Delimiters
     Result := '';
     _s := '';
   end;
@@ -591,7 +594,8 @@ end;
 
 function ExtractFirstWord(var _s: string; const _Delimiter: string): string;
 begin
-  if not ExtractFirstWord(_s, _Delimiter, Result) then begin // s contained only Delimiters
+  if not ExtractFirstWord(_s, _Delimiter, Result) then
+  begin // s contained only Delimiters
     Result := '';
     _s := '';
   end;
@@ -602,7 +606,8 @@ var
   Start, Ende: Integer;
 begin
   Result := nthWordStartAndEnd(_s, 1, _Delimiter, Start, Ende);
-  if Result then begin
+  if Result then
+  begin
     _FirstWord := Copy(_s, Start, Ende - Start);
     _s := TailStr(_s, Ende + 1);
   end;
@@ -613,7 +618,8 @@ var
   Start, Ende: Integer;
 begin
   Result := nthWordStartAndEnd(_s, 1, _Delimiter, Start, Ende);
-  if Result then begin
+  if Result then
+  begin
     _FirstWord := Copy(_s, Start, Ende - Start);
     _s := TailStr(_s, Ende + 1);
   end;
@@ -631,7 +637,8 @@ var
   s: string;
 begin
   Result := _sl;
-  while _s <> '' do begin
+  while _s <> '' do
+  begin
     s := ExtractFirstWord(_s, _Delimiter);
     Result.Add(s);
   end;
@@ -644,14 +651,19 @@ var
 begin
   SetLength(Result, Length(_s));
   j := 1;
-  for i := 1 to Length(_s) do begin
+  for i := 1 to Length(_s) do
+  begin
     p := Pos(_s[i], _Search);
-    if p <> 0 then begin
-      if Length(_Replace) >= p then begin
+    if p <> 0 then
+    begin
+      if Length(_Replace) >= p then
+      begin
         Result[j] := _Replace[p];
         Inc(j);
       end
-    end else begin
+    end
+    else
+    begin
       Result[j] := _s[i];
       Inc(j);
     end;
@@ -666,13 +678,18 @@ var
 begin
   Result := '';
   Dup := False;
-  for i := 1 to Length(_s) do begin
-    if CharInSet(_s[i], _Search) then begin
-      if not Dup or not _RemoveDuplicates then begin
+  for i := 1 to Length(_s) do
+  begin
+    if CharInSet(_s[i], _Search) then
+    begin
+      if not Dup or not _RemoveDuplicates then
+      begin
         Result := Result + _Replace;
         Dup := True;
       end;
-    end else begin
+    end
+    else
+    begin
       Result := Result + _s[i];
       Dup := False;
     end;
@@ -687,13 +704,17 @@ begin
   Result := _s;
   Dup := False;
   for i := Length(Result) downto 1 do
-    if Ord(Result[i]) < Ord(' ') then begin
-      if not Dup or not _RemoveDuplicates then begin
+    if Ord(Result[i]) < Ord(' ') then
+    begin
+      if not Dup or not _RemoveDuplicates then
+      begin
         Result[i] := _ReplaceChar;
         Dup := True;
-      end else
+      end
+      else
         Delete(Result, i, 1);
-    end else
+    end
+    else
       Dup := False;
 end;
 
@@ -719,7 +740,8 @@ var
 begin
   Result := '';
   Include(_ControlChars, AnsiChar(_Prefix));
-  for i := 1 to Length(_s) do begin
+  for i := 1 to Length(_s) do
+  begin
     if CharInSet(_s[i], _ControlChars) then
       Result := Result + Format('%s%.2x', [_Prefix, Ord(_s[i])]) // do not translate
     else
@@ -733,11 +755,14 @@ var
 begin
   Result := '';
   i := 1;
-  while i <= Length(_s) do begin
-    if (_s[i] = _Prefix) and (i + 2 <= Length(_s)) and isHexDigit(_s[i + 1]) and isHexDigit(_s[i + 2]) then begin
+  while i <= Length(_s) do
+  begin
+    if (_s[i] = _Prefix) and (i + 2 <= Length(_s)) and isHexDigit(_s[i + 1]) and isHexDigit(_s[i + 2]) then
+    begin
       Result := Result + Chr(Hex2Long(_s[i + 1] + _s[i + 2]));
       Inc(i, 2);
-    end else
+    end
+    else
       Result := Result + _s[i];
     Inc(i);
   end;
@@ -806,12 +831,14 @@ end;
 
 function RPadStr(const _s: string; _Len: Integer; _PadChar: Char; _AllowTruncate: Boolean = True): string;
 begin
-  if Length(_s) >= _Len then begin
+  if Length(_s) >= _Len then
+  begin
     if _AllowTruncate then
       Result := LeftStr(_s, _Len)
     else
       Result := _s;
-  end else
+  end
+  else
     Result := _s + StringOfChar(_PadChar, _Len - Length(_s));
 end;
 
@@ -822,12 +849,14 @@ end;
 
 function LPadStr(const _s: string; _Len: Integer; _PadChar: Char; _AllowTruncate: Boolean = True): string;
 begin
-  if Length(_s) >= _Len then begin
+  if Length(_s) >= _Len then
+  begin
     if _AllowTruncate then
       Result := RightStr(_s, _Len)
     else
       Result := _s;
-  end else
+  end
+  else
     Result := StringOfChar(_PadChar, _Len - Length(_s)) + _s;
 end;
 
@@ -858,7 +887,8 @@ var
 begin
   Result := 0;
   p := Pos(_Sub, _s);
-  while p > 0 do begin
+  while p > 0 do
+  begin
     Inc(Result, p);
     _s := TailStr(_s, p + 1);
     p := Pos(_Sub, _s);
@@ -899,7 +929,8 @@ begin
     Inc(i);
   if i > L then
     Result := ''
-  else begin
+  else
+  begin
     while _s[L] = ' ' do
       Dec(L);
     Result := Copy(_s, i, L - i + 1);
@@ -946,7 +977,8 @@ end;}
 procedure StrReadZ(var _f: file; _p: PChar);
 begin
   BlockRead(_f, _p^, SizeOf(_p^));
-  while _p^ <> #0 do begin
+  while _p^ <> #0 do
+  begin
     Inc(_p);
     BlockRead(_f, _p^, SizeOf(_p^));
   end;
@@ -955,7 +987,8 @@ end;
 procedure StrReadLn(var _f: file; _p: PChar);
 begin
   BlockRead(_f, _p^, SizeOf(_p^));
-  while _p^ <> #13 do begin
+  while _p^ <> #13 do
+  begin
     Inc(_p);
     BlockRead(_f, _p^, SizeOf(_p^));
   end;
@@ -967,10 +1000,13 @@ var
   p: Integer;
 begin
   p := Pos(_Delimiter, _Source);
-  if p = 0 then begin
+  if p = 0 then
+  begin
     Result := _Source;
     _Source := '';
-  end else begin
+  end
+  else
+  begin
     Result := LeftStr(_Source, p - 1);
     _Source := TailStr(_Source, p + 1);
   end;
@@ -986,7 +1022,8 @@ function ExtractStr(var _Source: string; _Delimiters: TCharSet; out _SubStr: str
 var
   p: Integer;
 begin
-  if _LastWasDelimiter then begin
+  if _LastWasDelimiter then
+  begin
     _LastWasDelimiter := False;
     Result := True;
     _Source := '';
@@ -995,8 +1032,10 @@ begin
   end;
 
   p := 1;
-  while p <= Length(_Source) do begin
-    if CharInSet(_Source[p], _Delimiters) then begin
+  while p <= Length(_Source) do
+  begin
+    if CharInSet(_Source[p], _Delimiters) then
+    begin
       _SubStr := LeftStr(_Source, p - 1);
       _Source := TailStr(_Source, p + 1);
       if _Source = '' then
@@ -1007,7 +1046,8 @@ begin
     Inc(p);
   end;
   Result := _Source <> '';
-  if Result then begin
+  if Result then
+  begin
     _SubStr := LeftStr(_Source, p - 1);
     _Source := '';
   end;
@@ -1111,7 +1151,8 @@ var
 begin
   p := Pos(_SubStr, _Str);
   Result := (p <> 0);
-  if Result then begin
+  if Result then
+  begin
     _Head := LeftStr(_Str, p - 1);
     _Tail := TailStr(_Str, p + Length(_SubStr));
   end;
@@ -1135,7 +1176,8 @@ begin
   // twm: This is not particularly efficient, just don't use it on large strings. ;-)
   Result := '';
   Spaces := SpaceStr(_SpcCount);
-  for i := 1 to Length(_s) do begin
+  for i := 1 to Length(_s) do
+  begin
     if _s[i] = #9 then
       Result := Result + Spaces
     else
@@ -1277,7 +1319,8 @@ var
 begin
   Result := False;
   for i := 0 to Length(_Arr) - 1 do
-    if _s = _Arr[i] then begin
+    if _s = _Arr[i] then
+    begin
       Result := True;
       Exit; //==>
     end;
@@ -1289,7 +1332,8 @@ var
 begin
   Result := False;
   for i := 0 to Length(_Arr) - 1 do
-    if SameText(_s, _Arr[i]) then begin
+    if SameText(_s, _Arr[i]) then
+    begin
       Result := True;
       Exit; //==>
     end;
@@ -1339,3 +1383,4 @@ end;
 {$ENDIF SUPPORTS_UNICODE}
 
 end.
+

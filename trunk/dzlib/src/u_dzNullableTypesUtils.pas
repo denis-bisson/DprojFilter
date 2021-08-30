@@ -1,4 +1,4 @@
-//********************************************************************************
+﻿//********************************************************************************
 //* DprojFilter                                                                  *
 //* -----------------------------------------------------------------------------*
 //* Command line parser and other utilities from dzlib                           *
@@ -74,33 +74,33 @@ function UserLocaleFormatSettings: PFormatSettings;
 procedure StrToNumber(const _s: string; out _Value: Integer); overload;
 procedure StrToNumber(const _s: string; out _Value: Single); overload;
 procedure StrToNumber(const _s: string; out _Value: Double); overload;
-{$ifndef win64}
+{$IFNDEF win64}
 // Extended = Double in Win64
 procedure StrToNumber(const _s: string; out _Value: Extended); overload;
-{$endif}
+{$ENDIF}
 
 function TryStrToNumber(const _s: string; out _Value: Integer; const _FormatSettings: TFormatSettings): Boolean; overload;
 function TryStrToNumber(const _s: string; out _Value: Int64; const _FormatSettings: TFormatSettings): Boolean; overload;
 function TryStrToNumber(const _s: string; out _Value: Single; const _FormatSettings: TFormatSettings): Boolean; overload;
 function TryStrToNumber(const _s: string; out _Value: Double; const _FormatSettings: TFormatSettings): Boolean; overload;
-{$ifndef win64}
+{$IFNDEF win64}
 function TryStrToNumber(const _s: string; out _Value: Extended; const _FormatSettings: TFormatSettings): Boolean; overload;
-{$endif}
+{$ENDIF}
 
 function NumberToStr(_Value: Integer): string; overload;
 function NumberToStr(_Value: Single): string; overload;
 function NumberToStr(_Value: Double): string; overload;
-{$ifndef win64}
+{$IFNDEF win64}
 function NumberToStr(_Value: Extended): string; overload;
-{$endif}
+{$ENDIF}
 
 function TryVar2Number(const _v: Variant; out _Value: Integer): Boolean; overload;
 function TryVar2Number(const _v: Variant; out _Value: Int64): Boolean; overload;
 function TryVar2Number(const _v: Variant; out _Value: Single): Boolean; overload;
 function TryVar2Number(const _v: Variant; out _Value: Double): Boolean; overload;
-{$ifndef win64}
+{$IFNDEF win64}
 function TryVar2Number(const _v: Variant; out _Value: Extended): Boolean; overload;
-{$endif}
+{$ENDIF}
 
 function GetNullableTypesFlagInterface: IInterface;
 
@@ -108,9 +108,9 @@ procedure DivideNumbers(_a, _b: Integer; out _Value: Integer); overload;
 procedure DivideNumbers(_a, _b: Int64; out _Value: Int64); overload;
 procedure DivideNumbers(_a, _b: Single; out _Value: Single); overload;
 procedure DivideNumbers(_a, _b: Double; out _Value: Double); overload;
-{$ifndef win64}
+{$IFNDEF win64}
 procedure DivideNumbers(_a, _b: Extended; out _Value: Extended); overload;
-{$endif}
+{$ENDIF}
 
 implementation
 
@@ -176,12 +176,12 @@ begin
   _Value := StrToFloat(_s);
 end;
 
-{$ifndef Win64}
+{$IFNDEF Win64}
 procedure StrToNumber(const _s: string; out _Value: Extended);
 begin
   _Value := StrToFloat(_s);
 end;
-{$endif}
+{$ENDIF}
 
 // TryStrToNumber
 
@@ -205,12 +205,12 @@ begin
   Result := TryStrToFloat(_s, _Value, _FormatSettings);
 end;
 
-{$ifndef Win64}
+{$IFNDEF Win64}
 function TryStrToNumber(const _s: string; out _Value: Extended; const _FormatSettings: TFormatSettings): Boolean;
 begin
   Result := TryStrToFloat(_s, _Value, _FormatSettings);
 end;
-{$endif}
+{$ENDIF}
 
 // NumberToStr
 
@@ -229,12 +229,12 @@ begin
   Result := FloatToStr(_Value);
 end;
 
-{$ifndef Win64}
+{$IFNDEF Win64}
 function NumberToStr(_Value: Extended): string;
 begin
   Result := FloatToStr(_Value);
 end;
-{$endif}
+{$ENDIF}
 
 // TryVar2Number
 
@@ -258,13 +258,12 @@ begin
   Result := TryVar2Dbl(_v, _Value);
 end;
 
-{$ifndef Win64}
+{$IFNDEF Win64}
 function TryVar2Number(const _v: Variant; out _Value: Extended): Boolean;
 begin
   Result := TryVar2Ext(_v, _Value);
 end;
-{$endif}
-
+{$ENDIF}
 
 procedure DivideNumbers(_a, _b: Integer; out _Value: Integer);
 begin
@@ -286,12 +285,12 @@ begin
   _Value := _a / _b;
 end;
 
-{$ifndef Win64}
+{$IFNDEF Win64}
 procedure DivideNumbers(_a, _b: Extended; out _Value: Extended);
 begin
   _Value := _a / _b;
 end;
-{$endif}
+{$ENDIF}
 
 initialization
   gblUserLocaleFormatSettings := GetUserDefaultLocaleSettings;

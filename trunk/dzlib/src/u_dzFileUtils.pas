@@ -161,8 +161,8 @@ type
     /// @param IncludePath determines whether the List of filenames includes the full path or not </summary>
     class function Execute(const _Mask: string; _List: TStrings;
       _MayHaveAttr: TFileAttributeSet = ALL_FILES_ATTRIB_SET; _IncludePath: Boolean = False; _Sort: Boolean = True): Integer;
-    class function EnumFilesOnly(const _Mask: string; _List: TStrings; sOrigin:string;
-      _IncludePath: Boolean = False; _Sort: Boolean = True; const iDeepLevel:integer=0): Integer;
+    class function EnumFilesOnly(const _Mask: string; _List: TStrings; sOrigin: string;
+      _IncludePath: Boolean = False; _Sort: Boolean = True; const iDeepLevel: integer = 0): Integer;
     class function EnumDirsOnly(const _Mask: string; _List: TStrings;
       _IncludePath: Boolean = False; _Sort: Boolean = True): Integer;
     /// <summary>
@@ -306,9 +306,9 @@ type
     FOnSyncingFile: TOnSyncingFile;
     FOnFileExists: TOnFileExists;
     FOnQueryFileSync: TOnQueryFileSync;
-//    FOnDifferentFileExists: TOnDifferentFileExists;
-//    FCheckContent: boolean;
-//    procedure doOnDifferentFileExists(const _Filename: string; var _Action: TFileExistsAction);
+    //    FOnDifferentFileExists: TOnDifferentFileExists;
+    //    FCheckContent: boolean;
+    //    procedure doOnDifferentFileExists(const _Filename: string; var _Action: TFileExistsAction);
     procedure doOnSyncingDir(const _SrcDir, _DstDir: string);
     ///<summary>
     /// Called before once before copying a file and possible several times while it is being
@@ -336,13 +336,13 @@ type
     /// (not implemented: if CheckContent=true, the content existing files will be checked and if
     ///                   it doesn't match, OnDifferentFileExists is called) </summary>
     procedure SyncBothWays(const _DirA, _DirB: string);
-//    {! Not implemented: Called, if the content of an existing file is different }
-//    property OnDifferentFileExists: TOnDifferentFileExists read FOnDifferentFileExists write FOnDifferentFileExists;
-//    {! Not implemented: if true, OnDifferentFileExists will be called }
-//    property CheckContent: boolean read FCheckContent write FCheckContent default false;
-    /// <summary>
-    /// called when a new directory is entered, to abort synchronization,
-    /// raise an exception (e.g. SysUtils.Abort), and catch it in the calling method </summary>
+    //    {! Not implemented: Called, if the content of an existing file is different }
+    //    property OnDifferentFileExists: TOnDifferentFileExists read FOnDifferentFileExists write FOnDifferentFileExists;
+    //    {! Not implemented: if true, OnDifferentFileExists will be called }
+    //    property CheckContent: boolean read FCheckContent write FCheckContent default false;
+        /// <summary>
+        /// called when a new directory is entered, to abort synchronization,
+        /// raise an exception (e.g. SysUtils.Abort), and catch it in the calling method </summary>
     property OnSyncingDir: TOnSyncing read FOnSyncingDir write FOnSyncingDir;
     /// <summary>
     /// called when a file is being copied, to abort synchronization,
@@ -372,7 +372,7 @@ type
       TCopyFileFlagSet = set of TCopyFileFlags;
       TCopyFileFlagIfExists = (cfeFailIfExists, cfeOverwriteIfExists);
       TCopyFileFlagOverwriteReadonly = (cforDoNotOverwriteReadonly, cforOverwriteReadonly);
-      TMoveFileExFlags = (mfCopyAllowed, {mfCreateHardlink,} mfDelayUntilReboot, mfFailIfNotTrackable,
+      TMoveFileExFlags = (mfCopyAllowed, {mfCreateHardlink,}mfDelayUntilReboot, mfFailIfNotTrackable,
         mfReplaceExisting, mfWriteThrough);
       TMoveFileExFlagSet = set of TMoveFileExFlags;
       TMatchingFileResult = (mfNotFound, mfDirectory, mfFile, mfSpecial);
@@ -417,18 +417,18 @@ type
     /// @returns a filename to use for a temporary file. </summary>
     class function GetTempFileName(_Directory: string = ''; const _Prefix: string = 'dz';
       _Unique: Word = 0): string;
-//    ///<summary>
-//    /// Returns a temporary filename which is ensured not to already exist before but has been created
-//    /// in this call.
-//    /// @param Directory is a string with the directory to create the file in, defaults
-//    ///                  to the TEMP directory.
-//    /// @param Prefix is a string with a prefix for the filename, defaults to 'dz'.
-//    /// @param Ext is the extension for the filename, defaults to '.tmp'. </summary>
-//    class function GetTempFileNameEx(_Directory: string = ''; const _Prefix: string = 'dz';
-//      const _Ext: string = '.tmp'): string;
-    /// <summary>
-    /// Calls the corresponding Windows function and returns the short path name
-    /// for an *existing* file or directory. </summary>
+    //    ///<summary>
+    //    /// Returns a temporary filename which is ensured not to already exist before but has been created
+    //    /// in this call.
+    //    /// @param Directory is a string with the directory to create the file in, defaults
+    //    ///                  to the TEMP directory.
+    //    /// @param Prefix is a string with a prefix for the filename, defaults to 'dz'.
+    //    /// @param Ext is the extension for the filename, defaults to '.tmp'. </summary>
+    //    class function GetTempFileNameEx(_Directory: string = ''; const _Prefix: string = 'dz';
+    //      const _Ext: string = '.tmp'): string;
+        /// <summary>
+        /// Calls the corresponding Windows function and returns the short path name
+        /// for an *existing* file or directory. </summary>
     class function GetShortPathname(const _LongName: string): string;
 
     /// <summary>
@@ -1217,20 +1217,20 @@ begin
   end;
 end;
 
-class function TSimpleDirEnumerator.EnumFilesOnly(const _Mask: string; _List: TStrings; sOrigin:string; _IncludePath, _Sort: Boolean; const iDeepLevel:integer): Integer;
+class function TSimpleDirEnumerator.EnumFilesOnly(const _Mask: string; _List: TStrings; sOrigin: string; _IncludePath, _Sort: Boolean; const iDeepLevel: integer): Integer;
 var
   sListFilename: string;
   slFileList: TStringList;
   iTotalNumberOfFiles, iIndexFile, iNumberOfNewFiles: integer;
 
-  procedure RaiseExceptionWithErrorMessage(sErrorMessage:string);
+  procedure RaiseExceptionWithErrorMessage(sErrorMessage: string);
   begin
-    WriteUserMessage('Error with specified file to process!'+#$0D+#$0A+'Origin: '+sOrigin+#$0D#$0A+'Filter: '+_Mask+#$0D#$0A+'  Type: '+sErrorMessage, ouscERROR);
+    WriteUserMessage('Error with specified file to process!' + #$0D + #$0A + 'Origin: ' + sOrigin + #$0D#$0A + 'Filter: ' + _Mask + #$0D#$0A + '  Type: ' + sErrorMessage, ouscERROR);
     halt(3);
   end;
 
 begin
-  result:=0;
+  result := 0;
   if LeftStr(_Mask, 1) = '@' then
   begin
     iTotalNumberOfFiles := 0;
@@ -1240,11 +1240,11 @@ begin
       slFileList := TStringList.Create;
       try
         slFileList.LoadFromFile(sListFilename);
-        iIndexFile:=0;
-        while iIndexFile<slFileList.Count do
+        iIndexFile := 0;
+        while iIndexFile < slFileList.Count do
         begin
-          if (slFileList.Strings[iIndexFile]<>'') AND (LeftStr(slFileList.Strings[iIndexFile],2)<>'//') then
-            iTotalNumberOfFiles := iTotalNumberOfFiles + Self.EnumFilesOnly(slFileList.Strings[iIndexFile], _List, sOrigin +' ('+_Mask+')'+#$0D#$0A+'        File "'+sListFilename+'" line #'+succ(iIndexFile).ToString ,_IncludePath, _Sort);
+          if (slFileList.Strings[iIndexFile] <> '') and (LeftStr(slFileList.Strings[iIndexFile], 2) <> '//') then
+            iTotalNumberOfFiles := iTotalNumberOfFiles + Self.EnumFilesOnly(slFileList.Strings[iIndexFile], _List, sOrigin + ' (' + _Mask + ')' + #$0D#$0A + '        File "' + sListFilename + '" line #' + succ(iIndexFile).ToString, _IncludePath, _Sort);
           inc(iIndexFile);
         end;
       finally
@@ -1253,20 +1253,20 @@ begin
     end
     else
     begin
-      RaiseExceptionWithErrorMessage('Specified file list does not exist "'+sListFilename+'"');
+      RaiseExceptionWithErrorMessage('Specified file list does not exist "' + sListFilename + '"');
     end;
     Result := iTotalNumberOfFiles;
   end
   else
   begin
     iNumberOfNewFiles := Execute(_Mask, _List, [dfaArchive], _IncludePath, _Sort);
-    if iNumberOfNewFiles>0 then
+    if iNumberOfNewFiles > 0 then
     begin
-    Result := iNumberOfNewFiles;
+      Result := iNumberOfNewFiles;
     end
     else
     begin
-      RaiseExceptionWithErrorMessage('No file matching "'+_Mask+'"');
+      RaiseExceptionWithErrorMessage('No file matching "' + _Mask + '"');
     end;
   end;
 end;
@@ -1304,7 +1304,8 @@ begin
   else
     Path := '';
   Result := 0;
-  while FindNext(s) do begin
+  while FindNext(s) do
+  begin
     Inc(Result);
     if Assigned(_List) then
       _List.Add(Path + s);
@@ -1335,7 +1336,8 @@ var
 begin
   Path := ExtractFilePath(FMask);
   repeat
-    if not FActive then begin
+    if not FActive then
+    begin
       FMatchCount := 0;
       Attr := 0;
       CondAddAttr(dfaReadonly, SysUtils.faReadOnly);
@@ -1347,7 +1349,9 @@ begin
       Result := (Res = 0);
       if Result then
         FActive := True;
-    end else begin
+    end
+    else
+    begin
       Res := SysUtils.FindNext(FSr);
       Result := (Res = 0);
     end;
@@ -1355,7 +1359,8 @@ begin
       Exit;
     if (Sr.Name = '.') or (Sr.Name = '..') then
       Continue;
-    if FMustHaveAttr <> [] then begin
+    if FMustHaveAttr <> [] then
+    begin
       Attr := FSr.Attr;
       if not AttrOk(dfaReadonly, SysUtils.faReadOnly) then
         Continue;
@@ -1403,7 +1408,8 @@ begin
   // the terminating 0
   SetLength(Result, MAX_PATH);
   Res := Windows.GetTempPath(MAX_PATH + 1, PChar(Result));
-  if Res <= 0 then begin
+  if Res <= 0 then
+  begin
     // GetLastError must be called before _(), otherwise the error code gets lost
     LastError := GetLastError;
     RaiseLastOSErrorEx(LastError, _('TFileSystem.GetTempPath: %1:s (code: %0:d) calling Windows.GetTempPath'));
@@ -1429,9 +1435,11 @@ var
 begin
   SetLength(Result, MAX_PATH + 1);
   Res := GetVolumeInformation(PChar(itpd(_Share)), PChar(Result), Length(Result), nil, nil, nil, nil, 0);
-  if Res then begin
+  if Res then
+  begin
     Result := PChar(Result);
-  end else
+  end
+  else
     Result := '';
 end;
 
@@ -1446,17 +1454,23 @@ var
   s: string;
 begin
   Integer(DriveBits) := Windows.GetLogicalDrives;
-  for DriveNum := 0 to 25 do begin
+  for DriveNum := 0 to 25 do
+  begin
     if not (DriveNum in DriveBits) then
       Continue;
     DriveChar := Char(DriveNum + Ord('a'));
     DriveType := TDriveType(Windows.GetDriveType(PChar(DriveChar + ':\')));
-    if not _HdOnly or (DriveType = dtFixed) then begin
+    if not _HdOnly or (DriveType = dtFixed) then
+    begin
       s := GetVolumeName(DriveChar);
-      if s <> '' then begin
+      if s <> '' then
+      begin
         _sl.AddObject(s, Pointer(DriveNum));
-      end else begin
-        if not _IgnoreEmpty then begin
+      end
+      else
+      begin
+        if not _IgnoreEmpty then
+        begin
           s := _('<no volume name>');
           _sl.AddObject(s, Pointer(DriveNum));
         end;
@@ -1484,8 +1498,10 @@ var
   LastError: Cardinal;
 begin
   Result := SysUtils.CreateDir(_DirectoryName);
-  if not Result then begin
-    if _ErrorHandling = ehRaiseException then begin
+  if not Result then
+  begin
+    if _ErrorHandling = ehRaiseException then
+    begin
       // GetLastError must be called before _(), otherwise the error code gets lost
       LastError := GetLastError;
       // duplicate % so they get passed through the format function
@@ -1516,10 +1532,12 @@ begin
   s := itpd(_BaseDir) + _Prefix + '_' + IntToStr(Pid) + '_';
   Counter := 0;
   Ok := False;
-  while not Ok do begin
+  while not Ok do
+  begin
     Result := s + IntToStr(Counter);
     Ok := Self.CreateDir(Result, ehReturnFalse);
-    if not Ok then begin
+    if not Ok then
+    begin
       Inc(Counter);
       if Counter > 1000 then
         raise ECreateUniqueDir.CreateFmt(_('Could not find a unique directory name based on "%s"'), [Result]);
@@ -1565,7 +1583,8 @@ begin
     _Directory := GetTempPath;
   SetLength(Result, MAX_PATH);
   Res := Windows.GetTempFileName(PChar(_Directory), PChar(_Prefix), _Unique, PChar(Result));
-  if Res = 0 then begin
+  if Res = 0 then
+  begin
     // GetLastError must be called before _(), otherwise the error code gets lost
     LastError := GetLastError;
     RaiseLastOSErrorEx(LastError, _('TFileSystem.GetTempFilename: %1:s (Code: %0:d) calling Windows.GetTempFileName'));
@@ -1665,7 +1684,8 @@ var
 begin
   Res := FindFirst(_Filename, faAnyFile, Sr);
   Result := (Res = 0);
-  if Result then begin
+  if Result then
+  begin
     try
       _Info.Filename := _Filename;
       _Info.Size := Sr.Size;
@@ -1709,7 +1729,8 @@ begin
 
   if not (_DriveLetter in ['A'..'Z']) then
     Result := -1
-  else begin
+  else
+  begin
     try
       Result := SysUtils.DiskFree(Ord(_DriveLetter) - Ord('A') + 1);
     except
@@ -1737,10 +1758,12 @@ var
 begin
   SetLength(Result, MAX_PATH);
   Res := Windows.GetShortPathname(PChar(_LongName), PChar(Result), Length(Result));
-  if Res = 0 then begin
+  if Res = 0 then
+  begin
     LastError := GetLastError;
     RaiseLastOSErrorEx(LastError, _('TFileSystem.GetShortPathname: %1:s (Code: %0:d) calling Windows.GetShortPathname'));
-  end else if Res > MAX_PATH then
+  end
+  else if Res > MAX_PATH then
     raise EPathTooLong.CreateFmt(_('Short pathname is longer than MAX_PATH (%d) characters'), [MAX_PATH]);
   Result := PChar(Result); // truncate at first #0
 end;
@@ -1756,7 +1779,8 @@ var
   LastError: Cardinal;
 begin
   Result := Windows.MoveFile(PChar(_Source), PChar(_Dest));
-  if not Result and (_ErrorHandling = ehRaiseException) then begin
+  if not Result and (_ErrorHandling = ehRaiseException) then
+  begin
     LastError := GetLastError;
     // duplicate % so they get passed through the format function
     RaiseLastOSErrorEx(LastError, Format(_('Error %%1:s (%%0:d) while trying to move "%s" to "%s".'), [_Source, _Dest]));
@@ -1782,7 +1806,8 @@ begin
     Flags := Flags or MOVEFILE_WRITE_THROUGH;
 
   Result := Windows.MoveFileEx(PChar(_Source), PChar(_Dest), Flags);
-  if not Result and (_ErrorHandling = ehRaiseException) then begin
+  if not Result and (_ErrorHandling = ehRaiseException) then
+  begin
     LastError := GetLastError;
     // duplicate % so they get passed through the format function
     RaiseLastOSErrorEx(LastError, Format(_('Error %%1:s (%%0:d) while trying to move "%s" to "%s".'), [_Source, _Dest]));
@@ -1812,14 +1837,17 @@ begin
     Attr := Attr or SysUtils.faReadOnly
   else
     Attr := Attr and not SysUtils.faReadOnly;
-  if FileSetAttr(_Filename, Attr) <> 0 then begin
-    if _ErrorHandling = ehRaiseException then begin
+  if FileSetAttr(_Filename, Attr) <> 0 then
+  begin
+    if _ErrorHandling = ehRaiseException then
+    begin
       LastError := GetLastError;
       // duplicate % so they get passed through the format function
       RaiseLastOSErrorEx(LastError, Format(_('Error %%1:s (%%0:d) while changing the readonly flag of "%s"'), [_Filename]));
     end;
     Result := False
-  end else
+  end
+  else
     Result := True;
 end;
 
@@ -1829,11 +1857,13 @@ var
   LastError: Cardinal;
 begin
   Result := Windows.CopyFile(PChar(_Source), PChar(_Dest), _FailIfExists);
-  if not Result and not _FailIfExists and _ForceOverwrite then begin
+  if not Result and not _FailIfExists and _ForceOverwrite then
+  begin
     Self.SetReadonly(_Dest, False, ehReturnFalse);
     Result := Windows.CopyFile(PChar(_Source), PChar(_Dest), _FailIfExists);
   end;
-  if not Result and _RaiseException then begin
+  if not Result and _RaiseException then
+  begin
     LastError := GetLastError;
     // duplicate % so they get passed through the format function
     RaiseLastOSErrorEx(LastError, Format(_('Error %%1:s (%%0:d) while trying to copy "%s" to "%s".'), [_Source, _Dest]));
@@ -1846,11 +1876,13 @@ var
   LastError: Cardinal;
 begin
   Result := Windows.CopyFile(PChar(_Source), PChar(_Dest), (_IfExists = cfeFailIfExists));
-  if not Result and (_IfExists = cfeOverwriteIfExists) and (_IfReadOnly = cforOverwriteReadonly) then begin
+  if not Result and (_IfExists = cfeOverwriteIfExists) and (_IfReadOnly = cforOverwriteReadonly) then
+  begin
     Self.SetReadonly(_Dest, False, ehReturnFalse);
     Result := Windows.CopyFile(PChar(_Source), PChar(_Dest), (_IfExists = cfeFailIfExists));
   end;
-  if not Result and (_ErrorHandling = ehRaiseException) then begin
+  if not Result and (_ErrorHandling = ehRaiseException) then
+  begin
     LastError := GetLastError;
     // duplicate % so they get passed through the format function
     RaiseLastOSErrorEx(LastError, Format(_('Error %%1:s (%%0:d) while trying to copy "%s" to "%s".'), [_Source, _Dest]));
@@ -1938,9 +1970,11 @@ begin
   ForceDir(ExtractFilePath(BackupFilename));
 
   i := 0;
-  while not Self.CopyFile(_Filename, Result, cfeFailIfExists, ehReturnFalse) do begin
+  while not Self.CopyFile(_Filename, Result, cfeFailIfExists, ehReturnFalse) do
+  begin
     Inc(i);
-    if i = 1000 then begin
+    if i = 1000 then
+    begin
       LastError := GetLastError;
       ErrorMessage := SysErrorMessage(LastError);
       raise EBackupFailed.CreateFmt(
@@ -1984,8 +2018,10 @@ begin
   Result := False;
   SrcDirBs := itpd(_SrcDir);
   ParentDir := ExtractFileDir(_DestDir);
-  if (ParentDir <> '') and not DirExists(ParentDir) then begin
-    if _CreateIntermediate = cdciDoNotCreateIntermediate then begin
+  if (ParentDir <> '') and not DirExists(ParentDir) then
+  begin
+    if _CreateIntermediate = cdciDoNotCreateIntermediate then
+    begin
       if _ErrorHandling = ehRaiseException then
         raise Exception.CreateFmt(_('Error copying directory "%s" to "%s": Destination path "%s" does not exist.'),
           [_SrcDir, _DestDir, ParentDir]);
@@ -1993,7 +2029,8 @@ begin
     end;
   end;
 
-  if TFileSystem.DirExists(_DestDir) then begin
+  if TFileSystem.DirExists(_DestDir) then
+  begin
     if _ErrorHandling = ehRaiseException then
       raise Exception.CreateFmt(_('Directory %s already exists.'), [_DestDir]);
     Exit;
@@ -2028,13 +2065,13 @@ type
     constructor Create(_OnProgress: TCopyFileProgressEvt);
   end;
 
-//  PROGRESS_CONTINUE = 0;
-//  PROGRESS_CANCEL = 1;
-//  PROGRESS_STOP = 2;
-//  PROGRESS_QUIET = 3;
+  //  PROGRESS_CONTINUE = 0;
+  //  PROGRESS_CANCEL = 1;
+  //  PROGRESS_STOP = 2;
+  //  PROGRESS_QUIET = 3;
 
-//  CALLBACK_CHUNK_FINISHED = $00000000;
-//  CALLBACK_STREAM_SWITCH = $00000001;
+  //  CALLBACK_CHUNK_FINISHED = $00000000;
+  //  CALLBACK_STREAM_SWITCH = $00000001;
 
 function ProgressCallback(
   _TotalFileSize, _TotalBytesTransferred, _StreamSize, _StreamBytesTransferred: LARGE_INTEGER;
@@ -2054,7 +2091,7 @@ begin
       CALLBACK_CHUNK_FINISHED: Status.FCallbackReason := prChunkFinished;
       CALLBACK_STREAM_SWITCH: Status.FCallbackReason := prStreamSwitch;
     else
-    // Shouldn't happen, assume CALLBACK_CHUNK_FINISHED for now
+      // Shouldn't happen, assume CALLBACK_CHUNK_FINISHED for now
       Status.FCallbackReason := prChunkFinished;
     end;
     Status.FSourceFile := _SourceFile;
@@ -2124,24 +2161,30 @@ begin
       Flags := Flags or COPY_FILE_RESTARTABLE;
     Res := Windows.CopyFileEx(PChar(_Source), PChar(_Dest), @ProgressCallback, Redir,
       @Redir.FCancelFlag, Flags);
-    if Redir.FExceptAddr <> nil then begin
-      if _ErrorHandling = ehRaiseException then begin
+    if Redir.FExceptAddr <> nil then
+    begin
+      if _ErrorHandling = ehRaiseException then
+      begin
         raise Exception.CreateFmt(_('Error %s (%s) in progress callback while trying to copy "%s" to "%s".'),
           [Redir.FExceptMsg, Redir.FExceptClass, _Source, _Dest])at Redir.FExceptAddr;
       end;
       Exit; //==>
     end;
-    if not Res then begin
+    if not Res then
+    begin
       LastError := GetLastError;
       if LastError = ERROR_REQUEST_ABORTED then
         Result := cfwAborted
-      else begin
-        if _ErrorHandling = ehRaiseException then begin
+      else
+      begin
+        if _ErrorHandling = ehRaiseException then
+        begin
           // duplicate % so they get passed through the format function
           RaiseLastOSErrorEx(LastError, Format(_('Error %%1:s (%%0:d) while trying to copy "%s" to "%s".'), [_Source, _Dest]));
         end;
       end;
-    end else
+    end
+    else
       Result := cfwOK;
   finally
     FreeAndNil(Redir);
@@ -2162,10 +2205,12 @@ begin
   Files := TStringList.Create;
   try
     TSimpleDirEnumerator.Execute(SrcDirBs + _Mask, Files, [dfaHidden, dfaSysFile, dfaArchive]);
-    for s in Files do begin
+    for s in Files do
+    begin
       if Self.CopyFile(SrcDirBs + s, DestDirBS + s, _Flags) then
         Inc(Result)
-      else begin
+      else
+      begin
         if Assigned(_FilesSkipped) then
           _FilesSkipped.Add(s);
       end;
@@ -2206,9 +2251,11 @@ begin
       Flags := Flags or MOVEFILE_FAIL_IF_NOT_TRACKABLE;
     Res := Windows.MoveFileWithProgress(PChar(_Source), PChar(_Dest),
       @ProgressCallback, Redir, Flags);
-    if not Res then begin
+    if not Res then
+    begin
       LastError := GetLastError;
-      if mfwRaiseException in _Flags then begin
+      if mfwRaiseException in _Flags then
+      begin
         // duplicate % so they get passed through the format function
         RaiseLastOSErrorEx(LastError, Format(_('Error %%1:s (%%0:d) while trying to move "%s" to "%s".'), [_Source, _Dest]));
       end;
@@ -2217,7 +2264,8 @@ begin
         Result := cfwAborted
       else
         Result := cfwError;
-    end else
+    end
+    else
       Result := cfwOK;
   finally
     FreeAndNil(Redir);
@@ -2231,13 +2279,15 @@ var
   LastError: Cardinal;
 begin
   Result := SysUtils.DeleteFile(_Filename);
-  if not Result and _Force then begin
+  if not Result and _Force then
+  begin
     Attr := FileGetAttr(_Filename);
     Attr := Attr and not SysUtils.faReadOnly;
     FileSetAttr(_Filename, Attr);
     Result := SysUtils.DeleteFile(_Filename);
   end;
-  if not Result and _RaiseException then begin
+  if not Result and _RaiseException then
+  begin
     LastError := GetLastError;
     // duplicate % so they get passed through the format function
     RaiseLastOSErrorEx(LastError, Format(_('Error %%1:s (%%0:d) deleting file "%s"'), [_Filename]));
@@ -2265,9 +2315,11 @@ class function TFileSystem.DeleteMatchingFiles(const _Dir, _Mask: string;
     i: Integer;
     Mask: string;
   begin
-    for i := Low(_ExceptMasks) to High(_ExceptMasks) do begin
+    for i := Low(_ExceptMasks) to High(_ExceptMasks) do
+    begin
       Mask := LowerCase(_ExceptMasks[i]);
-      if MatchesMask(_s, Mask) then begin
+      if MatchesMask(_s, Mask) then
+      begin
         Result := True;
         Exit;
       end;
@@ -2284,7 +2336,8 @@ begin
 
   Result := 0;
   dir := IncludeTrailingPathDelimiter(_Dir);
-  if 0 = FindFirst(dir + _Mask, faAnyFile, Sr) then begin
+  if 0 = FindFirst(dir + _Mask, faAnyFile, Sr) then
+  begin
     try
       repeat
         if (Sr.Name <> '.') and (Sr.Name <> '..') then
@@ -2325,8 +2378,10 @@ var
   i: Integer;
 begin
   Result := True;
-  for i := 0 to _DirNames.Count - 1 do begin
-    if not DirExists(_DirNames[i]) then begin
+  for i := 0 to _DirNames.Count - 1 do
+  begin
+    if not DirExists(_DirNames[i]) then
+    begin
       Result := False;
       Exit; //==>
     end;
@@ -2382,7 +2437,8 @@ begin
   if 0 = FindFirst(_Mask, faAnyFile, Sr) then
     try
       repeat
-        if (Sr.Name <> '.') and (Sr.Name <> '..') then begin
+        if (Sr.Name <> '.') and (Sr.Name <> '..') then
+        begin
           _Filename := Sr.Name;
           if (Sr.Attr and SysUtils.faDirectory) <> 0 then
             Result := mfDirectory
@@ -2409,7 +2465,8 @@ begin
   try
     Result := SysUtils.ForceDirectories(_DirectoryPath);
   except
-    on e: Exception do begin
+    on e: Exception do
+    begin
       // ForceDirectories can raise EInOutError if the directory path contains empty parts
       if _ErrorHandling = ehRaiseException then
         raise Exception.CreateFmt(_('Error creating directory "%s": %s (%s)'), [_DirectoryPath, e.Message, e.ClassName]);
@@ -2417,7 +2474,8 @@ begin
       Exit;
     end;
   end;
-  if not Result and (_ErrorHandling = ehRaiseException) then begin
+  if not Result and (_ErrorHandling = ehRaiseException) then
+  begin
     LastError := GetLastError;
     // duplicate % so they get passed through the format function
     RaiseLastOSErrorEx(LastError, Format(_('Error %%1:s (%%0:d) creating directory "%s"'), [_DirectoryPath]));
@@ -2430,13 +2488,15 @@ var
   LastError: Cardinal;
 begin
   Result := SysUtils.RemoveDir(_DirName);
-  if not Result and _Force then begin
+  if not Result and _Force then
+  begin
     Attr := FileGetAttr(_DirName);
     Attr := Attr and not SysUtils.faReadOnly;
     FileSetAttr(_DirName, Attr);
     Result := SysUtils.RemoveDir(_DirName);
   end;
-  if not Result and _RaiseException then begin
+  if not Result and _RaiseException then
+  begin
     LastError := GetLastError;
     // duplicate % so they get passed through the format function
     RaiseLastOSErrorEx(LastError, Format(_('Error %%1:s (%%0:d) deleting directory "%s"'), [_DirName]));
@@ -2455,7 +2515,8 @@ var
   Filename: string;
 begin
   Result := DirectoryExists(ExcludeTrailingPathDelimiter(_DirName));
-  if not Result then begin
+  if not Result then
+  begin
     if _RaiseException then
       raise EDirNotFound.CreateFmt(_('"%s" does not exist or is not a directory'), [_DirName]);
     Exit;
@@ -2463,15 +2524,21 @@ begin
   if 0 = FindFirst(IncludeTrailingPathDelimiter(_DirName) + '*.*', faAnyFile, Sr) then
     try
       repeat
-        if (Sr.Name = '.') or (Sr.Name = '..') then begin
-            // ignore
-        end else begin
+        if (Sr.Name = '.') or (Sr.Name = '..') then
+        begin
+          // ignore
+        end
+        else
+        begin
           Filename := IncludeTrailingPathDelimiter(_DirName) + Sr.Name;
-          if (Sr.Attr and SysUtils.faDirectory) <> 0 then begin
+          if (Sr.Attr and SysUtils.faDirectory) <> 0 then
+          begin
             Result := DelDirTree(Filename, _RaiseException, _Force);
             if not Result then
               Exit;
-          end else begin
+          end
+          else
+          begin
             Result := DeleteFile(Filename, _RaiseException, _Force);
             if not Result then
               Exit;
@@ -2502,7 +2569,8 @@ var
   Attributes: Word;
 begin
   Result := False;
-  if FileExists(_Filename) then begin
+  if FileExists(_Filename) then
+  begin
     Attributes := FileGetAttr(_Filename);
     Result := ((Attributes and SysUtils.faReadOnly) <> 0);
   end;
@@ -2514,19 +2582,22 @@ var
   Res: THandle;
 begin
   Result := False;
-  if not FileExists(_Filename) then begin
-      // File does not exit
+  if not FileExists(_Filename) then
+  begin
+    // File does not exit
     Exit; //==>
   end;
   Attributes := FileGetAttr(_Filename);
-  if ((Attributes and SysUtils.faReadOnly) <> 0) then begin
+  if ((Attributes and SysUtils.faReadOnly) <> 0) then
+  begin
     // File has ReadOnly flag
     Exit; //==>
   end;
   Res := CreateFile(PChar(_Filename), GENERIC_READ or GENERIC_WRITE, FILE_SHARE_READ or FILE_SHARE_WRITE,
     nil, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0);
-  if Res = INVALID_HANDLE_VALUE then begin
-        // opening file failed
+  if Res = INVALID_HANDLE_VALUE then
+  begin
+    // opening file failed
     Exit; //==>
   end;
   CloseHandle(Res);
@@ -2541,7 +2612,8 @@ var
   NamePart: PChar;
 begin
   Res := Windows.GetFullPathName(PChar(_Fn), MAX_PATH, @Buffer, NamePart);
-  if Res = 0 then begin
+  if Res = 0 then
+  begin
     LastError := GetLastError;
     RaiseLastOSErrorEx(LastError, _('%s (code %d) calling Windows.GetFullPathName'));
   end;
@@ -2567,12 +2639,14 @@ var
 begin
   Result := False;
 
-  if _s = '' then begin
+  if _s = '' then
+  begin
     _ErrPos := 0;
     Exit;
   end;
 
-  if Length(_s) > MAX_PATH then begin
+  if Length(_s) > MAX_PATH then
+  begin
     _ErrPos := MAX_PATH;
     Exit;
   end;
@@ -2580,8 +2654,10 @@ begin
   NotAllowed := INVALID_FILENAME_CHARS;
   if not _AllowDot then
     Include(NotAllowed, '.');
-  for i := 1 to Length(_s) do begin
-    if CharInSet(_s[i], NotAllowed) then begin
+  for i := 1 to Length(_s) do
+  begin
+    if CharInSet(_s[i], NotAllowed) then
+    begin
       _ErrPos := i;
       Exit;
     end;
@@ -2601,7 +2677,8 @@ var
   i: Integer;
 begin
   Result := _s;
-  for i := 1 to Length(Result) do begin
+  for i := 1 to Length(Result) do
+  begin
     if CharInSet(Result[i], INVALID_FILENAME_CHARS) then
       Result[i] := _ReplaceChar;
   end;
@@ -2630,12 +2707,16 @@ class function TFileSystem.ExpandFileNameRelBaseDir(const _Filename, _BaseDir: s
 var
   Buffer: array[0..MAX_PATH - 1] of Char;
 begin
-  if PathIsRelative(PChar(_Filename)) then begin
+  if PathIsRelative(PChar(_Filename)) then
+  begin
     Result := IncludeTrailingPathDelimiter(_BaseDir) + _Filename;
-  end else begin
+  end
+  else
+  begin
     Result := _Filename;
   end;
-  if PathCanonicalize(@Buffer[0], PChar(Result)) then begin
+  if PathCanonicalize(@Buffer[0], PChar(Result)) then
+  begin
     Result := Buffer;
   end;
 end;
@@ -2649,7 +2730,8 @@ begin
   p := Pos('.', fn);
   if p = 0 then
     Result := ''
-  else begin
+  else
+  begin
     if _IncludeDot then
       Result := TailStr(fn, p)
     else
@@ -2678,7 +2760,8 @@ begin
   else
     Result := LeftStr(fn, p - 1);
 
-  if Path <> '' then begin
+  if Path <> '' then
+  begin
     itpd(Path);
     Result := Path + Result;
   end;
@@ -2714,7 +2797,8 @@ begin
     if Assigned(FOnProgress) then
       FOnProgress(Self, Result);
   except
-    on e: Exception do begin
+    on e: Exception do
+    begin
       FExceptAddr := ExceptAddr;
       FExceptMsg := e.Message;
       FExceptClass := e.ClassName;
@@ -2745,7 +2829,8 @@ function TFileGenerationHandler.Execute(_KeepOriginal: Boolean): string;
     MaxGen: Integer;
   begin
     MaxGen := FMaxGenerations - 1;
-    for i := MaxGen - 1 downto 1 do begin
+    for i := MaxGen - 1 downto 1 do
+    begin
       dst := GenerateFilename(i + 1);
       if FileExists(dst) then
         TFileSystem.DeleteFile(dst);
@@ -2757,7 +2842,8 @@ function TFileGenerationHandler.Execute(_KeepOriginal: Boolean): string;
     Result := GenerateFilename(0);
     if FileExists(dst) then
       TFileSystem.DeleteFile(dst);
-    if FileExists(Result) then begin
+    if FileExists(Result) then
+    begin
       if _KeepOriginal then
         TFileSystem.CopyFile(Result, dst, cfeFailIfExists)
       else
@@ -2773,7 +2859,8 @@ function TFileGenerationHandler.Execute(_KeepOriginal: Boolean): string;
     MaxGen: Integer;
   begin
     MaxGen := FMaxGenerations;
-    for i := MaxGen - 1 downto 1 do begin
+    for i := MaxGen - 1 downto 1 do
+    begin
       dst := GenerateFilename(i + 1);
       if FileExists(dst) then
         TFileSystem.DeleteFile(dst);
@@ -2798,19 +2885,23 @@ function TFileGenerationHandler.Execute(_KeepOriginal: Boolean): string;
 
     SlotFound := False;
     MaxGen := FMaxGenerations - 1;
-    for i := 1 to MaxGen do begin
+    for i := 1 to MaxGen do
+    begin
       dst := GenerateFilename(i);
-      if not FileExists(dst) then begin
+      if not FileExists(dst) then
+      begin
         SlotFound := True;
         Break;
       end;
     end;
 
-    if not SlotFound then begin
+    if not SlotFound then
+    begin
       dst := GenerateFilename(1);
       if FileExists(dst) then
         TFileSystem.DeleteFile(dst);
-      for i := 2 to MaxGen do begin
+      for i := 2 to MaxGen do
+      begin
         src := GenerateFilename(i);
         if FileExists(src) then
           TFileSystem.MoveFile(src, dst);
@@ -2830,14 +2921,16 @@ function TFileGenerationHandler.Execute(_KeepOriginal: Boolean): string;
     MaxGen: Integer;
   begin
     MaxGen := FMaxGenerations;
-    for i := 1 to MaxGen do begin
+    for i := 1 to MaxGen do
+    begin
       Result := GenerateFilename(i);
       if not FileExists(Result) then
         Exit;
     end;
 
     TFileSystem.DeleteFile(GenerateFilename(1));
-    for i := 2 to MaxGen do begin
+    for i := 2 to MaxGen do
+    begin
       TFileSystem.MoveFile(GenerateFilename(i), GenerateFilename(i - 1));
     end;
     Result := GenerateFilename(MaxGen);
@@ -2846,18 +2939,27 @@ function TFileGenerationHandler.Execute(_KeepOriginal: Boolean): string;
   end;
 
 begin
-  if FResultContainsNumber then begin
+  if FResultContainsNumber then
+  begin
     if _KeepOriginal then
       raise EInvalidPropertyCombination.Create(_('Combination of ResultContainsNumber and KeepOriginal is not allowed'));
-    if FOldestIsHighest then begin
+    if FOldestIsHighest then
+    begin
       Result := doNumberOldIsHighest();
-    end else begin
+    end
+    else
+    begin
       Result := doNumberOldIsLowest();
     end;
-  end else begin
-    if FOldestIsHighest then begin
+  end
+  else
+  begin
+    if FOldestIsHighest then
+    begin
       Result := doNoNumberOldIsHighest();
-    end else begin
+    end
+    else
+    begin
       Result := doNoNumberOldIsLowest();
     end;
   end;
@@ -2867,7 +2969,8 @@ function TFileGenerationHandler.GenerateFilename(_Generation: Integer): string;
 begin
   if _Generation = 0 then
     Result := FBaseName + FSuffix
-  else begin
+  else
+  begin
     if FPrependZeros = 0 then
       Result := FBaseName + '_' + IntToStr(_Generation) + FSuffix
     else
@@ -2910,7 +3013,8 @@ begin
   if not Assigned(FOnQueryFileSync) then
     Exit;
 
-  if not TFileSystem.TryGetFileInfo(_SrcFile, src) then begin
+  if not TFileSystem.TryGetFileInfo(_SrcFile, src) then
+  begin
     // File vanished
     Result := fsaSkip;
     Exit;
@@ -2953,12 +3057,18 @@ begin
   DstDirBS := itpd(_DstDir);
   EnumA := TSimpleDirEnumerator.Create(SrcDirBs + '*.*');
   try
-    while EnumA.FindNext(Filename) do begin
-      if (EnumA.Sr.Attr and SysUtils.faDirectory) <> 0 then begin
+    while EnumA.FindNext(Filename) do
+    begin
+      if (EnumA.Sr.Attr and SysUtils.faDirectory) <> 0 then
+      begin
         CheckOneWay(SrcDirBs + Filename, DstDirBS + Filename);
-      end else if FileExists(DstDirBS + Filename) then begin
+      end
+      else if FileExists(DstDirBS + Filename) then
+      begin
         doOnFileExists(SrcDirBs, DstDirBS, Filename);
-      end else begin
+      end
+      else
+      begin
         doOnSyncingFile(SrcDirBs + Filename, DstDirBS + Filename, EnumA.Sr.Size, 0);
       end;
     end;
@@ -2985,24 +3095,32 @@ begin
     TFileSystem.ForceDir(DstDirBS);
   EnumA := TSimpleDirEnumerator.Create(SrcDirBs + '*.*');
   try
-    while EnumA.FindNext(Filename) do begin
+    while EnumA.FindNext(Filename) do
+    begin
       FCurrentSource := SrcDirBs + Filename;
-      if (EnumA.Sr.Attr and SysUtils.faDirectory) <> 0 then begin
+      if (EnumA.Sr.Attr and SysUtils.faDirectory) <> 0 then
+      begin
         if _FlattenDirHierarchy then
           FCurrentDest := _DstDir
-        else begin
+        else
+        begin
           FCurrentDest := DstDirBS + Filename;
         end;
         SyncOneWay(FCurrentSource, FCurrentDest, _FlattenDirHierarchy);
-      end else begin
-        if not SameText(ExtractFileExt(Filename), TMPEXT) then begin // do not sync .tmp files
+      end
+      else
+      begin
+        if not SameText(ExtractFileExt(Filename), TMPEXT) then
+        begin // do not sync .tmp files
           Destination := DstDirBS + Filename;
           TempFile := Destination + TMPEXT;
           if FileExists(TempFile) then
             TFileSystem.DeleteFile(TempFile, False);
 
-          if FileExists(Destination) then begin
-            if doOnFileExists(SrcDirBs, DstDirBS, Filename) = feaOverwrite then begin
+          if FileExists(Destination) then
+          begin
+            if doOnFileExists(SrcDirBs, DstDirBS, Filename) = feaOverwrite then
+            begin
               TFileSystem.DeleteFile(Destination, False);
               // copy to temp
               FCurrentDest := TempFile;
@@ -3017,7 +3135,9 @@ begin
               if cfwOK <> TFileSystem.MoveFileWithProgress(FCurrentSource, FCurrentDest, ProgressStatusCallback, []) then
                 SysUtils.Abort;
             end;
-          end else if doOnQueryFileSync(FCurrentSource, FCurrentDest) = fsaCopy then begin
+          end
+          else if doOnQueryFileSync(FCurrentSource, FCurrentDest) = fsaCopy then
+          begin
             // copy to temp
             FCurrentDest := TempFile;
             doOnSyncingFile(FCurrentSource, FCurrentDest, EnumA.Sr.Size, 0);
@@ -3081,7 +3201,8 @@ begin
 {$I-}
   Rewrite(_File);
 {$I+}
-  if IOResult <> 0 then begin
+  if IOResult <> 0 then
+  begin
     ZeroMemory(@_File, SizeOf(_File));
     raise Exception.CreateFmt(_('Could not open file "%s" for writing.'), [_Filename]);
   end;
@@ -3164,25 +3285,35 @@ begin
   s := FFull;
   Result := 0;
   Part := '';
-  while s <> '' do begin
-    if Result = 0 then begin
-      if StartsStr(PathDelim + PathDelim, s) then begin //FI:W510
+  while s <> '' do
+  begin
+    if Result = 0 then
+    begin
+      if StartsStr(PathDelim + PathDelim, s) then
+      begin //FI:W510
         // UNC path
         p := PosEx(PathDelim, s, 3);
         if p > 0 then
           p := PosEx(PathDelim, s, p + 1);
-        if p > 0 then begin
+        if p > 0 then
+        begin
           _sl.Add(Copy(s, 1, p - 1));
           s := Copy(s, p + 1);
-        end else begin
+        end
+        else
+        begin
           _sl.Add(s);
           s := '';
         end;
-      end else begin
+      end
+      else
+      begin
         // no UNC, might be a drive, but could also be '\bla\blub' or 'bla\blub'
         _sl.Add(ExtractStr(s, PathDelim));
       end;
-    end else begin
+    end
+    else
+    begin
       _sl.Add(ExtractStr(s, PathDelim));
     end;
     Inc(Result);
@@ -3216,7 +3347,8 @@ begin
     GetParts(sl);
     if _Depth < 0 then
       _Depth := sl.Count + _Depth;
-    if _Depth < 0 then begin
+    if _Depth < 0 then
+    begin
       Result := '';
       Exit; //==>
     end;
@@ -3273,13 +3405,17 @@ end;
 function TFilename.TryGetRootDir(out _Root: string): Boolean;
 begin
   Result := Length(FFull) >= 3;
-  if Result and StartsStr(PathDelim + PathDelim, FFull) then begin //FI:W510
+  if Result and StartsStr(PathDelim + PathDelim, FFull) then
+  begin //FI:W510
     Result := True;
     _Root := Parts(1);
-  end else if Result and CharInSet(UpCase(FFull[1]), ['A'..'Z']) and (FFull[2] = ':') and (FFull[3] = PathDelim) then begin
+  end
+  else if Result and CharInSet(UpCase(FFull[1]), ['A'..'Z']) and (FFull[2] = ':') and (FFull[3] = PathDelim) then
+  begin
     Result := True;
     _Root := itpd(Parts(1));
-  end else
+  end
+  else
     Result := False;
 end;
 
@@ -3338,7 +3474,8 @@ begin
   Result := True;
   sl := AsStringlist;
   try
-    for i := 0 to sl.Count - 1 do begin
+    for i := 0 to sl.Count - 1 do
+    begin
       if sl[i] <> '' then
         if TFileSystem.DirExists(sl[i]) then
           Exit; //==>
@@ -3356,9 +3493,11 @@ var
 begin
   sl := AsStringlist;
   try
-    for i := 0 to sl.Count - 1 do begin
+    for i := 0 to sl.Count - 1 do
+    begin
       if sl[i] <> '' then
-        if not TFileSystem.DirExists(sl[i]) then begin
+        if not TFileSystem.DirExists(sl[i]) then
+        begin
           Result := False;
           _FirstNonExistingDir := sl[i];
           Exit; //=>
@@ -3439,12 +3578,15 @@ begin
   fn := _FilenameOnly;
   sl := AsStringlist;
   try
-    for i := 0 to sl.Count - 1 do begin
+    for i := 0 to sl.Count - 1 do
+    begin
       dir := sl[i];
-      if dir <> '' then begin
+      if dir <> '' then
+      begin
         fn.ReplaceDirectory(dir);
         Result := TFileSystem.FileExists(fn);
-        if Result then begin
+        if Result then
+        begin
           _FoundFile := fn;
           Exit;
         end;
@@ -3492,3 +3634,4 @@ initialization
   // mode dialogs from hanging the application.
   SetErrorMode(SEM_FAILCRITICALERRORS);
 end.
+
