@@ -161,8 +161,8 @@ type
     /// @param IncludePath determines whether the List of filenames includes the full path or not </summary>
     class function Execute(const _Mask: string; _List: TStrings;
       _MayHaveAttr: TFileAttributeSet = ALL_FILES_ATTRIB_SET; _IncludePath: Boolean = False; _Sort: Boolean = True): Integer;
-    class function EnumFilesOnly(const _Mask: string; _List: TStrings;
-      _IncludePath: Boolean = False; _Sort: Boolean = True): Integer;
+    class function EnumFilesOnly(const _Mask: string; _List: TStrings; sOrigin:string;
+      _IncludePath: Boolean = False; _Sort: Boolean = True; const iDeepLevel:integer=0): Integer;
     class function EnumDirsOnly(const _Mask: string; _List: TStrings;
       _IncludePath: Boolean = False; _Sort: Boolean = True): Integer;
     /// <summary>
@@ -1160,7 +1160,8 @@ uses
   u_dzMiscUtils,
   u_dzStringUtils,
   u_dzDateUtils,
-  u_dzFileStreams;
+  u_dzFileStreams,
+  uOutputUserMessage;
 
 function _(const _s: string): string; inline;
 begin
@@ -1216,12 +1217,20 @@ begin
   end;
 end;
 
-class function TSimpleDirEnumerator.EnumFilesOnly(const _Mask: string; _List: TStrings; _IncludePath, _Sort: Boolean): Integer;
+class function TSimpleDirEnumerator.EnumFilesOnly(const _Mask: string; _List: TStrings; sOrigin:string; _IncludePath, _Sort: Boolean; const iDeepLevel:integer): Integer;
 var
   sListFilename: string;
   slFileList: TStringList;
-  iTotalNumberOfFiles, iIndexFile: integer;
+  iTotalNumberOfFiles, iIndexFile, iNumberOfNewFiles: integer;
+
+  procedure RaiseExceptionWithErrorMessage(sErrorMessage:string);
+  begin
+    WriteUserMessage('Error with specified file to process!'+#$0D+#$0A+'Origin: '+sOrigin+#$0D#$0A+'Filter: '+_Mask+#$0D#$0A+'  Type: '+sErrorMessage, ouscERROR);
+    halt(3);
+  end;
+
 begin
+  result:=0;
   if LeftStr(_Mask, 1) = '@' then
   begin
     iTotalNumberOfFiles := 0;
@@ -1234,18 +1243,31 @@ begin
         iIndexFile:=0;
         while iIndexFile<slFileList.Count do
         begin
-          iTotalNumberOfFiles := iTotalNumberOfFiles + Self.EnumFilesOnly(slFileList.Strings[iIndexFile], _List, _IncludePath, _Sort);
+          if (slFileList.Strings[iIndexFile]<>'') AND (LeftStr(slFileList.Strings[iIndexFile],2)<>'//') then
+            iTotalNumberOfFiles := iTotalNumberOfFiles + Self.EnumFilesOnly(slFileList.Strings[iIndexFile], _List, sOrigin +' ('+_Mask+')'+#$0D#$0A+'        File "'+sListFilename+'" line #'+succ(iIndexFile).ToString ,_IncludePath, _Sort);
           inc(iIndexFile);
         end;
       finally
         FreeAndNil(slFileList);
       end;
+    end
+    else
+    begin
+      RaiseExceptionWithErrorMessage('Specified file list does not exist "'+sListFilename+'"');
     end;
     Result := iTotalNumberOfFiles;
   end
   else
   begin
-    Result := Execute(_Mask, _List, [dfaArchive], _IncludePath, _Sort);
+    iNumberOfNewFiles := Execute(_Mask, _List, [dfaArchive], _IncludePath, _Sort);
+    if iNumberOfNewFiles>0 then
+    begin
+    Result := iNumberOfNewFiles;
+    end
+    else
+    begin
+      RaiseExceptionWithErrorMessage('No file matching "'+_Mask+'"');
+    end;
   end;
 end;
 

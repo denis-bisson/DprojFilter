@@ -40,12 +40,14 @@ type
     FInsertAfterAll: Boolean;
     FINsertAfterAllowDuplicates: Boolean;
     FFileIdx,FFileCount:integer;
+    FFilesToProcess:TStringList;
     FCurrentFilename: string;
     FCurrentFileChangeCount: integer;
     FKeepGoing: integer;
     FOriginalFile: TStringList;
     FModifiedFile: TStringList;
-    procedure HandleParam(const slOptionsList: TStringList; const _Parameter: string;const sOriginOfLines:string);
+    procedure GoCollectAllTheFilesToProcess(const _Parameter: string;const sOriginOfLines:string);
+    procedure HandleParam(const slOptionsList: TStringList; const sOriginOfLines:string);
     procedure HandleFile(const slOptionsList: TStringList;const sOriginOfLines:string);
     function HandleParamFile: integer;
     function HandleOptionList(const slOptionsList: TStringList;const sOriginOfLines:string;const iDeepLevel:integer): integer;
@@ -113,9 +115,19 @@ begin
 
     slOptionList := TStringList.Create;
     try
-      slOptionList.Add(sOptionLine);
-      for ParamIdx := 0 to pred(Parameters.Count) do
-        HandleParam(slOptionList, Parameters[ParamIdx], sCOMMANDLINENAME+' ('+sOptionLine+')');
+      FFilesToProcess:=TStringList.Create;
+      try
+        FFilesToProcess.Sorted:=True;
+        FFilesToProcess.Duplicates:=dupIgnore;
+
+        slOptionList.Add(sOptionLine);
+        for ParamIdx := 0 to pred(Parameters.Count) do
+          GoCollectAllTheFilesToProcess(Parameters[ParamIdx],Parameters[ParamIdx] );
+
+        HandleParam(slOptionList,sCOMMANDLINENAME+' ('+sOptionLine+')');
+      finally
+        FreeAndNil(FFilesToProcess);
+      end;
     finally
       FreeAndNil(slOptionList);
     end;
@@ -125,26 +137,34 @@ begin
   Result := 0;
 end;
 
-{ TDprojFilterMain.HandleParam }
-procedure TDprojFilterMain.HandleParam(const slOptionsList: TStringList; const _Parameter: string;const sOriginOfLines:string);
+procedure TDprojFilterMain.GoCollectAllTheFilesToProcess(const _Parameter: string;const sOriginOfLines:string);
 var
   Files: TStringList;
+  iFileIndex:integer;
 begin
   Files := TStringList.Create;
   try
-    TSimpleDirEnumerator.EnumFilesOnly(_Parameter, Files, True);
+    TSimpleDirEnumerator.EnumFilesOnly(_Parameter, Files, sCOMMANDLINENAME, True);
+    for iFileIndex:=0 to pred(Files.Count) do
+      FFilesToProcess.Add(Files.Strings[iFileIndex]);
+
     WriteUserMessage(Format('Found %d file%s matching %s', [Files.Count, IfThen(Files.Count > 1, 's', ''), _Parameter]));
-    FFileIdx:=0;
-    FFileCount:=Files.Count;
-    while FFileIdx<FFileCount  do
-    begin
-      FCurrentFilename := Files[FFileIdx];
-      HandleFile(slOptionsList,sOriginOfLines);
-      inc(FFileIdx);
-    end;
   finally
     FreeAndNil(Files);
   end;
+end;
+
+{ TDprojFilterMain.HandleParam }
+procedure TDprojFilterMain.HandleParam(const slOptionsList: TStringList; const sOriginOfLines:string);
+begin
+    FFileIdx:=0;
+    FFileCount:=FFilesToProcess.Count;
+    while FFileIdx<FFileCount  do
+    begin
+      FCurrentFilename := FFilesToProcess[FFileIdx];
+      HandleFile(slOptionsList,sOriginOfLines);
+      inc(FFileIdx);
+    end;
 end;
 
 { TDprojFilterMain.HandleFile }
