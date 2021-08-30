@@ -104,8 +104,8 @@
         <Manifest_File>$(BDS)\bin\default_app.manifest</Manifest_File>
         <VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
         <VerInfo_MinorVer>18</VerInfo_MinorVer>
-        <VerInfo_Build>633</VerInfo_Build>
-        <VerInfo_Keys>CompanyName=Open Source;FileDescription=Manipulate;FileVersion=1.18.0.633;InternalName=DprojFilter;LegalCopyright=2021;LegalTrademarks=Open Source;OriginalFilename=DprojFilter.exe;ProductName=DprojFilter;ProductVersion=1.18;Comments=Made with Delphi</VerInfo_Keys>
+        <VerInfo_Build>634</VerInfo_Build>
+        <VerInfo_Keys>CompanyName=Open Source;FileDescription=Manipulate;FileVersion=1.18.0.634;InternalName=DprojFilter;LegalCopyright=2021;LegalTrademarks=Open Source;OriginalFilename=DprojFilter.exe;ProductName=DprojFilter;ProductVersion=1.18;Comments=Made with Delphi</VerInfo_Keys>
         <VerInfo_AutoIncVersion>true</VerInfo_AutoIncVersion>
         <DCC_ConsoleTarget>true</DCC_ConsoleTarget>
         <DCC_OutputDRCFile>true</DCC_OutputDRCFile>
@@ -114,6 +114,7 @@
         <DCC_MapFile>2</DCC_MapFile>
         <Debugger_CWD>C:\tmp\TestFiles</Debugger_CWD>
         <Debugger_RunParams>--GroupOptions=&quot;Job.lst&quot; @ListOffiles.lst @list2.lst</Debugger_RunParams>
+        <Icon_MainIcon>Icon\DprojFilter.ico</Icon_MainIcon>
     </PropertyGroup>
     <ProjectExtensions>
         <Borland.Personality>Delphi.Personality.12</Borland.Personality>
@@ -1265,12 +1266,4 @@
     <Import Project="$(BDS)\Bin\CodeGear.Delphi.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Delphi.Targets')"/>
     <Import Project="$(APPDATA)\Embarcadero\$(BDSAPPDATABASEDIR)\$(PRODUCTVERSION)\UserTools.proj" Condition="Exists('$(APPDATA)\Embarcadero\$(BDSAPPDATABASEDIR)\$(PRODUCTVERSION)\UserTools.proj')"/>
     <Import Project="$(MSBuildProjectName).deployproj" Condition="Exists('$(MSBuildProjectName).deployproj')"/>
-    <PropertyGroup Condition="'$(Config)'=='Release' And '$(Platform)'=='Win32'">
-        <PreBuildEvent/>
-        <PreBuildEventIgnoreExitCode>True</PreBuildEventIgnoreExitCode>
-        <PreLinkEvent/>
-        <PreLinkEventIgnoreExitCode>True</PreLinkEventIgnoreExitCode>
-        <PostBuildEvent><![CDATA[]]></PostBuildEvent>
-        <PostBuildEventIgnoreExitCode>True</PostBuildEventIgnoreExitCode>
-    </PropertyGroup>
 </Project>
