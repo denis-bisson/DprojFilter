@@ -22,6 +22,8 @@ program DprojFilter;
 uses
   System.SysUtils,
   System.StrUtils,
+  System.Types,
+  WinApi.Windows,
   u_DprojFilterMain in 'u_DprojFilterMain.pas',
   u_dzCmdLineParser in 'dzlib\src\u_dzCmdLineParser.pas',
   u_dzCmdLineParserStates in 'dzlib\src\u_dzCmdLineParserStates.pas',
@@ -51,6 +53,63 @@ uses
   u_DprojFilterOptionKeyWords in 'u_DprojFilterOptionKeyWords.pas';
 
 {$R *.res}
+
+{ DprojFilter_GetVersionName }
+function DprojFilter_GetVersionName: string;
+{ ---------------------------------------------------------
+  Extracts the FileVersion element of the VERSIONINFO
+  structure that Delphi maintains as part of a project's
+  options.
+
+  Results are returned as a standard string.  Failure
+  is reported as "".
+
+  Note that this implementation was derived from similar
+  code used by Delphi to validate ComCtl32.dll.  For
+  details, see COMCTRLS.PAS, line 3541.
+  -------------------------------------------------------- }
+const
+  NOVIDATA = '';
+
+var
+  dwInfoSize, // Size of VERSIONINFO structure
+  dwVerSize, // Size of Version Info Data
+  dwWnd: DWORD; // Handle for the size call.
+  FI: PVSFixedFileInfo; // Delphi structure; see WINDOWS.PAS
+  ptrVerBuf: Pointer; // pointer to a version buffer
+  V1,V2,V3,V4:string;
+begin
+  V1 := '';
+  V2 := '';
+  V3 := '';
+  V4 := '';
+
+  dwInfoSize := getFileVersionInfoSize(PChar(GetModuleName(HInstance)), dwWnd);
+
+  if (dwInfoSize = 0) then
+    result := NOVIDATA
+  else
+  begin
+    getMem(ptrVerBuf, dwInfoSize);
+    try
+      if getFileVersionInfo(PChar(GetModuleName(HInstance)), dwWnd, dwInfoSize, ptrVerBuf) then
+      begin
+        if verQueryValue(ptrVerBuf, '\', Pointer(FI), dwVerSize) then
+        begin
+          V1 := Format('%d', [hiWord(FI.dwFileVersionMS)]);
+          V2 := Format('%d', [loWord(FI.dwFileVersionMS)]);
+          V3 := Format('%d', [hiWord(FI.dwFileVersionLS)]);
+          V4 := Format('%d', [loWord(FI.dwFileVersionLS)]);
+          result := V1 + '.' + V2 + '.' + V3 + '.' + V4;
+        end;
+      end;
+
+    finally
+      freeMem(ptrVerBuf);
+    end;
+  end;
+end;
+
 
 { DprojFilter_LogUserMessage }
 procedure DprojFilter_LogUserMessage(const sMsgToShow: string; const iContext: tOUS_Context);
@@ -98,7 +157,7 @@ end;
 { DprojFilter_DisplayAppInfo }
 procedure DprojFilter_DisplayAppInfo;
 begin
-  WriteUserMessage('DprojFilter ver 1.0.0.0');
+  WriteUserMessage('DprojFilter ver '+DprojFilter_GetVersionName);
   WriteUserMessage('--------------------------------------------------------------------------------');
   WriteUserMessage('Originally and mainly written by Thomas Mueller');
   WriteUserMessage('  https://osdn.net/projects/dprojfilter');

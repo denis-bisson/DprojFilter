@@ -104,8 +104,8 @@
         <Manifest_File>$(BDS)\bin\default_app.manifest</Manifest_File>
         <VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
         <VerInfo_MinorVer>18</VerInfo_MinorVer>
-        <VerInfo_Build>629</VerInfo_Build>
-        <VerInfo_Keys>CompanyName=Open Source;FileDescription=Manipulate;FileVersion=1.18.0.629;InternalName=DprojFilter;LegalCopyright=2021;LegalTrademarks=Open Source;OriginalFilename=DprojFilter.exe;ProductName=DprojFilter;ProductVersion=1.18;Comments=Made with Delphi</VerInfo_Keys>
+        <VerInfo_Build>630</VerInfo_Build>
+        <VerInfo_Keys>CompanyName=Open Source;FileDescription=Manipulate;FileVersion=1.18.0.630;InternalName=DprojFilter;LegalCopyright=2021;LegalTrademarks=Open Source;OriginalFilename=DprojFilter.exe;ProductName=DprojFilter;ProductVersion=1.18;Comments=Made with Delphi</VerInfo_Keys>
         <VerInfo_AutoIncVersion>true</VerInfo_AutoIncVersion>
         <DCC_ConsoleTarget>true</DCC_ConsoleTarget>
         <DCC_OutputDRCFile>true</DCC_OutputDRCFile>
