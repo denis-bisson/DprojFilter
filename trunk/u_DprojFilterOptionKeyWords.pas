@@ -1,7 +1,7 @@
 ﻿//********************************************************************************
 //* DprojFilter                                                                  *
 //* -----------------------------------------------------------------------------*
-//* Unit to hold the option used in DprojFilter.                                 *
+//* Unit to hold the options used in DprojFilter.                                 *
 //* We will try to refer their specific name from here for consistancy.          *
 //* This will avoid speeling the command differently from a place to another.    *
 //* Written by Denis Bisson, Drummondville, Québec, 2021-08-27.                  *
@@ -13,7 +13,6 @@
 //*   https://github.com/denis-bisson/DprojFilter                                *
 //*   2021-08-27                                                                 *
 //* -----------------------------------------------------------------------------*
-//* See following notes for complement information.                              *
 //* You should not remove these comments.                                        *
 //********************************************************************************
 //

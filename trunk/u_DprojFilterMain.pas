@@ -9,7 +9,6 @@
 //*   https://github.com/denis-bisson/DprojFilter                                *
 //*   2021-08-27                                                                 *
 //* -----------------------------------------------------------------------------*
-//* See following notes for complement information.                              *
 //* You should not remove these comments.                                        *
 //********************************************************************************
 //
@@ -25,7 +24,8 @@ uses
   SysUtils,
   Classes,
   u_dzDefaultMain,
-  uOutputUserMessage;
+  uOutputUserMessage,
+  u_GroupOptions;
 
 type
   TDprojFilterMain = class(TDefaultMain)
@@ -46,6 +46,7 @@ type
     FKeepGoing: integer;
     FOriginalFile: TStringList;
     FModifiedFile: TStringList;
+    FGroupOptionsList: TGroupOptionsList;
     procedure GoCollectAllTheFilesToProcess(const _Parameter: string; const sOriginOfLines: string);
     procedure HandleParam(const slOptionsList: TStringList; const sOriginOfLines: string);
     procedure HandleFile(const slOptionsList: TStringList; const sOriginOfLines: string);
@@ -58,6 +59,8 @@ type
   protected
     procedure InitCmdLineParser; override;
     function doExecute: Integer; override;
+  public
+    property GroupOptionsList: TGroupOptionsList read FGroupOptionsList;
   end;
 
 implementation
@@ -96,6 +99,7 @@ var
   sOptionLine, sMaybeAction: string;
 begin
   Parameters := TStringList.Create;
+  FGroupOptionsList := TGroupOptionsList.Create;
   try
     FGetOpt.ParamPassed('filename', Parameters);
 
@@ -132,6 +136,7 @@ begin
       FreeAndNil(slOptionList);
     end;
   finally
+    FreeAndNil(FGroupOptionsList);
     FreeAndNil(Parameters);
   end;
   Result := 0;
@@ -386,11 +391,17 @@ function TDprojFilterMain.ParseOptionLine(const sOptionLine: string; const sOrig
 var
   OptionsOK: boolean;
   sOptionFilename: string;
-  slOptionListOnTheFly: TStringList;
+  iGroupOptionsIndex: integer;
+  AGroupOptions: TGroupOptions;
 
   procedure RaiseExceptionWithErrorMessage(sErrorMessage: string);
   begin
     WriteUserMessage('ERROR!' + #$0D + #$0A + 'Origin: ' + sOriginOfLine + #$0D#$0A + '  Line: ' + sOptionLine + #$0D#$0A + '  Type: ' + sErrorMessage, ouscERROR);
+    if (DebugHook <> 0) and IsConsole then
+    begin
+      WriteUserMessage(' -- press Enter');
+      Readln;
+    end;
     halt(2);
   end;
 
@@ -459,21 +470,32 @@ begin
 
     if FGetOpt.OptionPassed(slKeyWords.Strings[KWD_GroupOptions], sOptionFilename) then
     begin
-      slOptionListOnTheFly := TStringList.Create;
-      try
-        sOptionFilename := SimpleDequoteString(sOptionFilename);
-        if FileExists(sOptionFilename) then
+      sOptionFilename := SimpleDequoteString(sOptionFilename);
+      if FileExists(sOptionFilename) then
+      begin
+        iGroupOptionsIndex := GroupOptionsList.FindByFilename(sOptionFilename);
+        if iGroupOptionsIndex = -1 then
         begin
-          slOptionListOnTheFly.LoadFromFile(sOptionFilename);
-          HandleOptionList(slOptionListOnTheFly, sOriginOfLine + ' (' + sOptionLine + ')' + #$0D#$0A + '        ' + slKeyWords.Strings[KWD_GroupOptions] + ' from file "' + sOptionFilename + '"', succ(iDeepLevel));
+          AGroupOptions := TGroupOptions.Create(sOptionFilename);
+          iGroupOptionsIndex := GroupOptionsList.Add(AGroupOptions);
+        end;
+
+        if GroupOptionsList.GroupOptions[iGroupOptionsIndex].CurrentlyParsing = False then
+        begin
+          GroupOptionsList.GroupOptions[iGroupOptionsIndex].CurrentlyParsing := True;
+          HandleOptionList(GroupOptionsList.GroupOptions[iGroupOptionsIndex].OptionsLines, sOriginOfLine + ' (' + sOptionLine + ')' + #$0D#$0A + '        ' + slKeyWords.Strings[KWD_GroupOptions] + ' from file "' + sOptionFilename + '"', succ(iDeepLevel));
+          GroupOptionsList.GroupOptions[iGroupOptionsIndex].CurrentlyParsing := False;
         end
         else
         begin
-          RaiseExceptionWithErrorMessage('File to include not found "' + sOptionFilename + '"');
+          RaiseExceptionWithErrorMessage('Circular reference with --' + slKeyWords.Strings[KWD_GroupOptions] + ' assigning a file already in parsing queue.' + #$0D#$0A + '        ' + sOptionFilename);
         end;
-      finally
-        FreeAndNil(slOptionListOnTheFly);
+      end
+      else
+      begin
+        RaiseExceptionWithErrorMessage('File to include not found "' + sOptionFilename + '"');
       end;
+
       FlushOptionCommands;
       OptionsOk := True;
     end;

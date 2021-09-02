@@ -104,8 +104,8 @@
         <Manifest_File>$(BDS)\bin\default_app.manifest</Manifest_File>
         <VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
         <VerInfo_MinorVer>18</VerInfo_MinorVer>
-        <VerInfo_Build>634</VerInfo_Build>
-        <VerInfo_Keys>CompanyName=Open Source;FileDescription=Manipulate;FileVersion=1.18.0.634;InternalName=DprojFilter;LegalCopyright=2021;LegalTrademarks=Open Source;OriginalFilename=DprojFilter.exe;ProductName=DprojFilter;ProductVersion=1.18;Comments=Made with Delphi</VerInfo_Keys>
+        <VerInfo_Build>645</VerInfo_Build>
+        <VerInfo_Keys>CompanyName=Open Source;FileDescription=Manipulate;FileVersion=1.18.0.645;InternalName=DprojFilter;LegalCopyright=2021;LegalTrademarks=Open Source;OriginalFilename=DprojFilter.exe;ProductName=DprojFilter;ProductVersion=1.18;Comments=Made with Delphi</VerInfo_Keys>
         <VerInfo_AutoIncVersion>true</VerInfo_AutoIncVersion>
         <DCC_ConsoleTarget>true</DCC_ConsoleTarget>
         <DCC_OutputDRCFile>true</DCC_OutputDRCFile>
@@ -113,7 +113,7 @@
         <DCC_DebugInfoInExe>true</DCC_DebugInfoInExe>
         <DCC_MapFile>2</DCC_MapFile>
         <Debugger_CWD>C:\tmp\TestFiles</Debugger_CWD>
-        <Debugger_RunParams>--GroupOptions=&quot;Job.lst&quot; @ListOffiles.lst @list2.lst</Debugger_RunParams>
+        <Debugger_RunParams>--GroupOptions=Job.joblst @ListOffiles.lst</Debugger_RunParams>
         <Icon_MainIcon>Icon\DprojFilter.ico</Icon_MainIcon>
     </PropertyGroup>
     <ProjectExtensions>
@@ -1246,6 +1246,7 @@
         <DCCReference Include="RegExLib\RegExpr.pas"/>
         <DCCReference Include="uOutputUserMessage.pas"/>
         <DCCReference Include="u_DprojFilterOptionKeyWords.pas"/>
+        <DCCReference Include="u_GroupOptions.pas"/>
         <None Include="dzlib\jedi_inc\jedi.inc"/>
         <None Include="dzlib\templates\t_dzListTemplate.tpl"/>
         <None Include="dzlib\templates\t_dzObjectListTemplate.tpl"/>

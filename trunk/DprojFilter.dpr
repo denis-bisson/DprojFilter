@@ -10,7 +10,6 @@
 //*   https://github.com/denis-bisson/DprojFilter                                *
 //*   2021-08-27                                                                 *
 //* -----------------------------------------------------------------------------*
-//* See following notes for complement information.                              *
 //* You should not remove these comments.                                        *
 //********************************************************************************
 //
@@ -50,7 +49,8 @@ uses
   u_dzVariantUtils in 'dzlib\src\u_dzVariantUtils.pas',
   RegExpr in 'RegExLib\RegExpr.pas',
   uOutputUserMessage in 'uOutputUserMessage.pas',
-  u_DprojFilterOptionKeyWords in 'u_DprojFilterOptionKeyWords.pas';
+  u_DprojFilterOptionKeyWords in 'u_DprojFilterOptionKeyWords.pas',
+  u_GroupOptions in 'u_GroupOptions.pas';
 
 {$R *.res}
 
