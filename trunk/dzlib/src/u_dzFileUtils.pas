@@ -161,10 +161,9 @@ type
     /// @param IncludePath determines whether the List of filenames includes the full path or not </summary>
     class function Execute(const _Mask: string; _List: TStrings;
       _MayHaveAttr: TFileAttributeSet = ALL_FILES_ATTRIB_SET; _IncludePath: Boolean = False; _Sort: Boolean = True): Integer;
-    class function EnumFilesOnly(const _Mask: string; _List: TStrings; sOrigin: string;
-      _IncludePath: Boolean = False; _Sort: Boolean = True; const iDeepLevel: integer = 0): Integer;
-    class function EnumDirsOnly(const _Mask: string; _List: TStrings;
-      _IncludePath: Boolean = False; _Sort: Boolean = True): Integer;
+    class function EnumFilesOnlyFirstLevel(const _Mask: string; _List: TStrings; sOrigin: string; _IncludePath: Boolean = False; _Sort: Boolean = True; const iDeepLevel: integer = 0): Integer;
+    class function EnumFilesOnly(const _Mask: string; _List: TStrings; sOrigin: string; _IncludePath: Boolean = False; _Sort: Boolean = True; const iDeepLevel: integer = 0): Integer;
+    class function EnumDirsOnly(const _Mask: string; _List: TStrings; _IncludePath: Boolean = False; _Sort: Boolean = True): Integer;
     /// <summary>
     /// Calls SysUtils.FindFirst on first call and SysUtls.FindNext in later
     /// calls.
@@ -1161,7 +1160,10 @@ uses
   u_dzStringUtils,
   u_dzDateUtils,
   u_dzFileStreams,
-  uOutputUserMessage;
+  uOutputUserMessage, u_FileList;
+
+var
+  u_dzFileUtils_FilesList: TFilesListList;
 
 function _(const _s: string): string; inline;
 begin
@@ -1217,15 +1219,25 @@ begin
   end;
 end;
 
+class function TSimpleDirEnumerator.EnumFilesOnlyFirstLevel(const _Mask: string; _List: TStrings; sOrigin: string; _IncludePath, _Sort: Boolean; const iDeepLevel: integer): Integer;
+begin
+  result := EnumFilesOnly(_Mask, _List, sOrigin, _IncludePath, _Sort, iDeepLevel);
+end;
+
 class function TSimpleDirEnumerator.EnumFilesOnly(const _Mask: string; _List: TStrings; sOrigin: string; _IncludePath, _Sort: Boolean; const iDeepLevel: integer): Integer;
 var
   sListFilename: string;
-  slFileList: TStringList;
-  iTotalNumberOfFiles, iIndexFile, iNumberOfNewFiles: integer;
+  iTotalNumberOfFiles, iIndexFile, iNumberOfNewFiles, iIndexFilesList: integer;
+  AFilesList: TFilesList;
 
   procedure RaiseExceptionWithErrorMessage(sErrorMessage: string);
   begin
-    WriteUserMessage('Error with specified file to process!' + #$0D + #$0A + 'Origin: ' + sOrigin + #$0D#$0A + 'Filter: ' + _Mask + #$0D#$0A + '  Type: ' + sErrorMessage, ouscERROR);
+    WriteUserMessage('Error with specified file to process!' + #$0D + #$0A + 'Origin: ' + sOrigin + #$0D#$0A + ' Param: ' + _Mask + #$0D#$0A + '  Type: ' + sErrorMessage, ouscERROR);
+    if (DebugHook <> 0) and IsConsole then
+    begin
+      WriteUserMessage(' -- press Enter');
+      Readln;
+    end;
     halt(3);
   end;
 
@@ -1237,18 +1249,28 @@ begin
     sListFilename := RightStr(_Mask, pred(Length(_Mask)));
     if FileExists(sListFilename) then
     begin
-      slFileList := TStringList.Create;
-      try
-        slFileList.LoadFromFile(sListFilename);
-        iIndexFile := 0;
-        while iIndexFile < slFileList.Count do
+      iIndexFilesList := u_dzFileUtils_FilesList.FindByFilename(sListFilename);
+      if iIndexFilesList = -1 then
+      begin
+        AFilesList := TFilesList.Create(sListFilename);
+        iIndexFilesList := u_dzFileUtils_FilesList.Add(AFilesList);
+      end;
+
+      iIndexFile := 0;
+      while iIndexFile < u_dzFileUtils_FilesList.FilesList[iIndexFilesList].ListOffiles.Count do
+      begin
+        if u_dzFileUtils_FilesList.FilesList[iIndexFilesList].CurrentlyParsing = False then
         begin
-          if (slFileList.Strings[iIndexFile] <> '') and (LeftStr(slFileList.Strings[iIndexFile], 2) <> '//') then
-            iTotalNumberOfFiles := iTotalNumberOfFiles + Self.EnumFilesOnly(slFileList.Strings[iIndexFile], _List, sOrigin + ' (' + _Mask + ')' + #$0D#$0A + '        File "' + sListFilename + '" line #' + succ(iIndexFile).ToString, _IncludePath, _Sort);
-          inc(iIndexFile);
+          u_dzFileUtils_FilesList.FilesList[iIndexFilesList].CurrentlyParsing := True;
+          if (u_dzFileUtils_FilesList.FilesList[iIndexFilesList].ListOffiles.Strings[iIndexFile] <> '') and (LeftStr(u_dzFileUtils_FilesList.FilesList[iIndexFilesList].ListOffiles.Strings[iIndexFile], 2) <> '//') then
+            iTotalNumberOfFiles := iTotalNumberOfFiles + Self.EnumFilesOnly(u_dzFileUtils_FilesList.FilesList[iIndexFilesList].ListOffiles.Strings[iIndexFile], _List, sOrigin + ' (' + _Mask + ')' + #$0D#$0A + '        File "' + sListFilename + '" line #' + succ(iIndexFile).ToString, _IncludePath, _Sort);
+          u_dzFileUtils_FilesList.FilesList[iIndexFilesList].CurrentlyParsing := False;
+        end
+        else
+        begin
+          RaiseExceptionWithErrorMessage('Circular reference to a list of file we have not finished to scan.');
         end;
-      finally
-        FreeAndNil(slFileList);
+        inc(iIndexFile);
       end;
     end
     else
@@ -3633,5 +3655,11 @@ initialization
   // with a parameter of SEM_FAILCRITICALERRORS at startup. This is to prevent error
   // mode dialogs from hanging the application.
   SetErrorMode(SEM_FAILCRITICALERRORS);
+
+  u_dzFileUtils_FilesList := TFilesListList.Create;
+
+finalization
+  FreeAndNil(u_dzFileUtils_FilesList);
+
 end.
 

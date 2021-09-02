@@ -50,7 +50,8 @@ uses
   RegExpr in 'RegExLib\RegExpr.pas',
   uOutputUserMessage in 'uOutputUserMessage.pas',
   u_DprojFilterOptionKeyWords in 'u_DprojFilterOptionKeyWords.pas',
-  u_GroupOptions in 'u_GroupOptions.pas';
+  u_GroupOptions in 'u_GroupOptions.pas',
+  u_FileList in 'dzlib\src\u_FileList.pas';
 
 {$R *.res}
 

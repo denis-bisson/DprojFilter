@@ -1,20 +1,23 @@
-//********************************************************************************
+ï»¿//********************************************************************************
 //* DprojFilter                                                                  *
 //* -----------------------------------------------------------------------------*
-//* Unit to cumulate the GroupOptions when parsing  job.                         *
-//* All this will allow us to read the eventual options from --GroupOptions file.*
+//* Unit to cumulate the file list when parsing  job.                            *
+//* All this will allow us to read the eventual file list from @ListOffiles.     *
 //* It allows to read them physically from their origin file JUST once.          *
+//* It might appear stupid to re-read a file list we have already used, but let's*
+//* not block that if there is no circular reference.                            *
+//* Anyway, we will parse the file just once anyway.
 //* If ever re-use for the same file of for subsequent files,  it will be fast   *
 //* since it will be read from memory simple.                                    *
 //* Finally, it will give us an easy way to detect circular references when a    *
-//* --GroupOptions would attempt to use a --GroupOptions that we have not        *
+//* @ListFilename would attempt to use a ListFilename that we have not           *
 //* finished to parse.                                                           *
-//* Written by Denis Bisson, Drummondville, Québec, 2021-09-02.                  *
+//* Written by Denis Bisson, Drummondville, QuÃ©bec, 2021-09-02.                  *
 //* -----------------------------------------------------------------------------*
 //* Used in the project DprojFilter                                              *
 //* Originally and mainly written by Thomas Mueller                              *
 //*   https://osdn.net/projects/dprojfilter                                      *
-//* This little adaptation written by Denis Bisson, Drummondville, Québec, Canada*
+//* This little adaptation written by Denis Bisson, Drummondville, QuÃ©bec, Canada*
 //*   https://github.com/denis-bisson/DprojFilter                                *
 //*   2021-08-27                                                                 *
 //* -----------------------------------------------------------------------------*
@@ -22,7 +25,7 @@
 //********************************************************************************
 //
 
-unit u_GroupOptions;
+unit u_FileList;
 
 interface
 
@@ -30,24 +33,24 @@ uses
   System.Classes;
 
 type
-  TGroupOptions = class(TObject)
+  TFilesList = class(TObject)
   private
     FOriginFilename: string;
-    FOptionsLines: TStringList;
+    FListOffiles: TStringList;
     FCurrentlyParsing: boolean;
   public
     property OriginFilename: string read FOriginFilename;
-    property OptionsLines: TStringList read FOptionsLines;
+    property ListOffiles: TStringList read FListOfFiles;
     property CurrentlyParsing: boolean read FCurrentlyParsing write FCurrentlyParsing;
     constructor Create(const paramOriginFilename: string);
     destructor Destroy; override;
   end;
 
-  TGroupOptionsList = class(TList)
+  TFilesListList = class(TList)
   private
-    function GetGroupOptions(Index: Integer): TGroupOptions;
+    function GetFilesList(Index: Integer): TFilesList;
   public
-    property GroupOptions[Index: Integer]: TGroupOptions read GetGroupOptions;
+    property FilesList[Index: Integer]: TFilesList read GetFilesList;
     function FindByFilename(const paramFilename: string): integer;
     procedure Clear; override;
   end;
@@ -57,31 +60,31 @@ implementation
 uses
   System.SysUtils;
 
-{ TGroupOptions.Create }
-constructor TGroupOptions.Create(const paramOriginFilename: string);
+{ TFilesList.Create }
+constructor TFilesList.Create(const paramOriginFilename: string);
 begin
   inherited Create;
   FOriginFilename := paramOriginFilename;
-  FOptionsLines := TStringList.Create;
-  if FileExists(paramOriginFilename) then FOptionsLines.LoadFromFile(FOriginFilename);
+  FListOffiles := TStringList.Create;
+  if FileExists(paramOriginFilename) then FListOfFiles.LoadFromFile(FOriginFilename);
   FCurrentlyParsing := False;
 end;
 
-{ TGroupOptions.Destroy }
-destructor TGroupOptions.Destroy;
+{ TFilesList.Destroy }
+destructor TFilesList.Destroy;
 begin
-  FreeAndNil(FOptionsLines);
+  FreeAndNil(FListOffiles);
   inherited Destroy;
 end;
 
-{ TGroupOptionsList.GetGroupOptions }
-function TGroupOptionsList.GetGroupOptions(Index: Integer): TGroupOptions;
+{ TFilesListList.GetFilesList }
+function TFilesListList.GetFilesList(Index: Integer): TFilesList;
 begin
-  result := TGroupOptions(Items[Index]);
+  result := TFilesList(Items[Index]);
 end;
 
-{ TGroupOptionsList.FindByFilename }
-function TGroupOptionsList.FindByFilename(const paramFilename: string): integer;
+{ TFilesListList.FindByFilename }
+function TFilesListList.FindByFilename(const paramFilename: string): integer;
 var
   iSeekIndex: integer;
 begin
@@ -89,20 +92,20 @@ begin
   iSeekIndex := 0;
   while (iSeekIndex < Count) and (result = -1) do
   begin
-    if SameText(paramFilename, GroupOptions[iSeekIndex].OriginFilename) then
+    if SameText(paramFilename, FilesList[iSeekIndex].OriginFilename) then
       result := iSeekIndex
     else
       inc(iSeekIndex);
   end;
 end;
 
-{ TGroupOptionsList.Clear }
-procedure TGroupOptionsList.Clear;
+{ TFilesListList.Clear }
+procedure TFilesListList.Clear;
 var
   iIndex: integer;
 begin
   for iIndex := pred(Count) downto 0 do
-    Self.GroupOptions[iIndex].Destroy;
+    Self.FilesList[iIndex].Destroy;
   inherited Clear;
 end;
 

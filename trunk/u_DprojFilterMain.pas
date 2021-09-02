@@ -149,7 +149,7 @@ var
 begin
   Files := TStringList.Create;
   try
-    TSimpleDirEnumerator.EnumFilesOnly(_Parameter, Files, sCOMMANDLINENAME, True);
+    TSimpleDirEnumerator.EnumFilesOnlyFirstLevel(_Parameter, Files, sCOMMANDLINENAME, True);
     for iFileIndex := 0 to pred(Files.Count) do
       FFilesToProcess.Add(Files.Strings[iFileIndex]);
 
