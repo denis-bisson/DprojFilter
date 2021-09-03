@@ -454,7 +454,7 @@ begin
   while FoundIdx < _Options.Count do
   begin
     if not FOptionNameList.Find(_Options.Names[FoundIdx], OptName) then
-      raise EUnknownOption.CreateFmt(_('Option %s is unknown'), [_Options.Names[FoundIdx]]);
+      raise EUnknownOption.CreateFmt(_('Option "--%s" is unknown'), [_Options.Names[FoundIdx]]);
     s := _Options.ValueFromIndex[FoundIdx];
     OptDesc := OptName.OptionDesc;
     if OptDesc.HasValue then

@@ -1268,7 +1268,7 @@ begin
         end
         else
         begin
-          RaiseExceptionWithErrorMessage('Circular reference to a list of file we have not finished to scan.');
+          RaiseExceptionWithErrorMessage('Circular reference to a list of files we have not finished to scan.');
         end;
         inc(iIndexFile);
       end;
