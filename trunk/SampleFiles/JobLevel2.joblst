@@ -1,0 +1,3 @@
+--InsertAfter="<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">" --Insert="Level2"
+--GroupOptions=ThirdMan.joblst
+--GroupOptions=JobLevel3.joblst
