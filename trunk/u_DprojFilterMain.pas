@@ -37,6 +37,8 @@ type
     FRegExReplaceTo: string;
     FInsertAfter: string;
     FInsert: string;
+    FbNoBackup: boolean;
+    FbTest: boolean;
     FInsertAfterAll: Boolean;
     FINsertAfterAllowDuplicates: Boolean;
     FFileIdx, FFileCount: integer;
@@ -101,6 +103,9 @@ begin
   Parameters := TStringList.Create;
   FGroupOptionsList := TGroupOptionsList.Create;
   try
+    FbNoBackup := False;
+    FbTest := False;
+
     FGetOpt.ParamPassed('filename', Parameters);
 
     sOptionLine := '';
@@ -114,6 +119,8 @@ begin
     if FGetOpt.OptionPassed(slKeyWords.Strings[KWD_InsertAfterAll], sMaybeAction) then sOptionLine := sOptionLine + IfThen(sOptionLine <> '', ' ', '') + '--' + slKeyWords.Strings[KWD_InsertAfterAll] + '=' + sMaybeAction;
     if FGetOpt.OptionPassed(slKeyWords.Strings[KWD_InsertAfterAllowDuplicates], sMaybeAction) then sOptionLine := sOptionLine + IfThen(sOptionLine <> '', ' ', '') + '--' + slKeyWords.Strings[KWD_InsertAfterAllowDuplicates] + '=' + sMaybeAction;
     if FGetOpt.OptionPassed(slKeyWords.Strings[KWD_GroupOptions], sMaybeAction) then sOptionLine := sOptionLine + IfThen(sOptionLine <> '', ' ', '') + '--' + slKeyWords.Strings[KWD_GroupOptions] + '=' + sMaybeAction;
+    if FGetOpt.OptionPassed(slKeyWords.Strings[KWD_NoBackup], sMaybeAction) then sOptionLine := sOptionLine + IfThen(sOptionLine <> '', ' ', '') + '--' + slKeyWords.Strings[KWD_NoBackup] + '=' + sMaybeAction;
+    if FGetOpt.OptionPassed(slKeyWords.Strings[KWD_Test], sMaybeAction) then sOptionLine := sOptionLine + IfThen(sOptionLine <> '', ' ', '') + '--' + slKeyWords.Strings[KWD_Test] + '=' + sMaybeAction;
 
     if sOptionLine = '' then RaiseExceptionSinceNoOptions;
 
@@ -170,6 +177,11 @@ begin
     HandleFile(slOptionsList, sOriginOfLines);
     inc(FFileIdx);
   end;
+
+  if FbTest then
+    WriteUserMessage(#$0D#$0A + 'Test Mode! Nothing have been modified, nothing have been saved.')
+  else if FbNoBackup then
+    WriteUserMessage(#$0D#$0A + 'No Backup have been saved, as requested.');
 end;
 
 { TDprojFilterMain.HandleFile }
@@ -204,18 +216,24 @@ begin
 
     if FCurrentFileChangeCount > 0 then
     begin
-      iAttemptIndex := 1;
-      repeat
-        case iAttemptIndex of
-          1: bakfn := FCurrentFilename + '.bak'
-        else
-          bakfn := FCurrentFilename + '.bak(' + iAttemptIndex.ToString + ')';
-        end;
-        inc(iAttemptIndex);
-      until not TFileSystem.FileExists(bakfn);
-      FOriginalFile.SaveToFile(bakfn);
-      WriteUserMessage(Format('  Backup file: "%s"', [bakfn]));
-      FOriginalFile.SaveToFile(FCurrentFilename, FOriginalFile.DefaultEncoding);
+      if not FbNoBackup then //No-no-no-no-no-no-no-no :-)
+      begin
+        iAttemptIndex := 1;
+        repeat
+          case iAttemptIndex of
+            1: bakfn := FCurrentFilename + '.bak'
+          else
+            bakfn := FCurrentFilename + '.bak(' + iAttemptIndex.ToString + ')';
+          end;
+          inc(iAttemptIndex);
+        until not TFileSystem.FileExists(bakfn);
+        FOriginalFile.SaveToFile(bakfn);
+
+        WriteUserMessage(Format('  Backup file: "%s"', [bakfn]));
+      end;
+
+      if not FbTest then
+        FOriginalFile.SaveToFile(FCurrentFilename, FOriginalFile.DefaultEncoding);
     end;
 
   finally
@@ -500,6 +518,19 @@ begin
       OptionsOk := True;
     end;
 
+    if FGetOpt.OptionPassed(slKeyWords.Strings[KWD_NoBackup]) then
+    begin
+      FbNoBackup := True;
+      OptionsOK := True;
+    end;
+
+    if FGetOpt.OptionPassed(slKeyWords.Strings[KWD_Test]) then
+    begin
+      FbNoBackup := True;
+      FbTest := True;
+      OptionsOK := True;
+    end;
+
     if not OptionsOK then
     begin
       RaiseExceptionSinceNoOptions;
@@ -537,6 +568,8 @@ begin
   FGetOpt.RegisterOption(slKeyWords.Strings[KWD_InsertAfterAll], 'If given, --' + slKeyWords.Strings[KWD_InsertAfter] + ' applies to all matching lines.\nIf not, only to the first.\nRequires an --' + slKeyWords.Strings[KWD_Insert] + ' option.', False);
   FGetOpt.RegisterOption(slKeyWords.Strings[KWD_InsertAfterAllowDuplicates], 'If given, --' + slKeyWords.Strings[KWD_InsertAfter] + ' will skip the check if the line to insert already exists.\nRequires an --' + slKeyWords.Strings[KWD_Insert] + ' option.', False);
   FGetOpt.RegisterOption(slKeyWords.Strings[KWD_GroupOptions], 'Will assume "value" is a text file where each line is a series of options to execute.\nEmpty lines and lines beginning with "//" will be ignored.', True);
+  FGetOpt.RegisterOption(slKeyWords.Strings[KWD_NoBackup], 'Will not save backup file at the end.\n', False);
+  FGetOpt.RegisterOption(slKeyWords.Strings[KWD_Test], 'Just for test.\nEverything will be parse and evaluate, but at the end, no file will be modified, no backup will be saved.', False);
   FGetOpt.DequoteParams := False;
 end;
 

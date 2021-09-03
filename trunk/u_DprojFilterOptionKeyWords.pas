@@ -36,6 +36,8 @@ var
   KWD_GroupOptions: integer = -1;
   KWD_RegExReplaceFrom: integer = -1;
   KWD_RegExReplaceTo: integer = -1;
+  KWD_NoBackup: integer = -1;
+  KWD_Test: integer = -1;
 
 implementation
 
@@ -61,6 +63,10 @@ initialization
   KWD_RegExReplaceFrom := 8;
   slKeyWords.Add('RegExReplaceTo');
   KWD_RegExReplaceTo := 9;
+  slKeyWords.Add('NoBackup');
+  KWD_NoBackup := 10;
+  slKeyWords.Add('Test');
+  KWD_Test := 11;
 
 end.
 
