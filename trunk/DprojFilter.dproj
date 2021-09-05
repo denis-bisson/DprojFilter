@@ -103,17 +103,16 @@
         <VerInfo_Locale>1033</VerInfo_Locale>
         <Manifest_File>$(BDS)\bin\default_app.manifest</Manifest_File>
         <VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
-        <VerInfo_MinorVer>19</VerInfo_MinorVer>
-        <VerInfo_Build>667</VerInfo_Build>
-        <VerInfo_Keys>CompanyName=Open Source;FileDescription=Manipulate;FileVersion=1.19.0.667;InternalName=DprojFilter;LegalCopyright=2021;LegalTrademarks=Open Source;OriginalFilename=DprojFilter.exe;ProductName=DprojFilter;ProductVersion=1.18;Comments=Made with Delphi</VerInfo_Keys>
+        <VerInfo_MinorVer>20</VerInfo_MinorVer>
+        <VerInfo_Build>672</VerInfo_Build>
+        <VerInfo_Keys>CompanyName=Open Source;FileDescription=DprojFilter - This is a tool to manipulate Delphi .dproj files or actually any text file.;FileVersion=1.20.0.672;InternalName=DprojFilter;LegalCopyright=2021;LegalTrademarks=Open Source;OriginalFilename=DprojFilter.exe;ProductName=DprojFilter - This is a tool to manipulate Delphi .dproj files or actually any text file.;ProductVersion=1.20;Comments=Made with Delphi</VerInfo_Keys>
         <VerInfo_AutoIncVersion>true</VerInfo_AutoIncVersion>
         <DCC_ConsoleTarget>true</DCC_ConsoleTarget>
         <DCC_OutputDRCFile>true</DCC_OutputDRCFile>
         <DCC_DcuOutput>dcu</DCC_DcuOutput>
         <DCC_DebugInfoInExe>true</DCC_DebugInfoInExe>
         <DCC_MapFile>2</DCC_MapFile>
-        <Debugger_CWD>C:\tmp\TestFiles</Debugger_CWD>
-        <Debugger_RunParams>--GroupOptions=Job.joblst @FilesListLevel1.lst</Debugger_RunParams>
+        <Debugger_RunParams>--InsertAfter=&quot;&lt;Project xmlns=&quot;http://schemas.microsoft.com/developer/msbuild/2003&quot;&gt;&quot; --Insert=&quot;Level3&quot; SampleFiles\ActionTest.dproj</Debugger_RunParams>
         <Icon_MainIcon>Icon\DprojFilter.ico</Icon_MainIcon>
     </PropertyGroup>
     <ProjectExtensions>

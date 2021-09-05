@@ -206,6 +206,9 @@ begin
     FOriginalFile.DefaultEncoding := FOriginalFile.Encoding;
 {$ENDIF}
     slOriginalFileLines.Assign(FOriginalFile);
+    slOriginalFileLines.DefaultEncoding := FOriginalFile.Encoding;
+    FModifiedFile.DefaultEncoding := FOriginalFile.Encoding;
+
     FCurrentFileChangeCount := 0;
     FKeepGoing := 0;
 
